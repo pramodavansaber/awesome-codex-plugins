@@ -3,269 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Awesome Codex Plugins</title>
-  <meta name="description" content="A curated directory of OpenAI Codex plugins. All community plugins verified with a valid .codex-plugin manifest.">
-  <meta property="og:title" content="Awesome Codex Plugins">
-  <meta property="og:description" content="A curated directory of OpenAI Codex plugins, skills, and resources.">
+  <title>Codex Plugins</title>
+  <meta name="description" content="A directory of verified OpenAI Codex plugins.">
+  <meta property="og:title" content="Codex Plugins">
+  <meta property="og:description" content="A directory of verified OpenAI Codex plugins.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>⬡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #07070e;
-      --bg-secondary: #0c0c16;
-      --bg-card: #0f0f1c;
-      --bg-card-hover: #131328;
-      --border: #1a1a35;
-      --border-hover: #2a2a50;
-      --text-primary: #e0e0f0;
-      --text-secondary: #8888a8;
-      --text-muted: #555570;
-      --accent-purple: #8b5cf6;
-      --accent-blue: #3b82f6;
-      --accent-cyan: #06b6d4;
-      --accent-green: #10b981;
-      --glow-purple: rgba(139,92,246,0.12);
+      --bg: #0a0a0a;
+      --surface: #131313;
+      --border: #1e1e1e;
+      --text: #d4d4d4;
+      --text-dim: #737373;
+      --text-faint: #404040;
+      --blue: #3b82f6;
+      --green: #22c55e;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: 'Roboto', system-ui, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-    h1, h2, h3, .stat-value, .plugin-name, .nav-logo, .badge, .hero-sub, .section-count, .category-label, .search-input, .stat-label, .footer p, .footer-links a, .plugin-tag, .plugin-author { font-family: 'Roboto Mono', monospace; }
-    .gradient-text { background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
-    .nav-logo { font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-    .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--text-primary); }
+    a { color: inherit; text-decoration: none; }
 
-    .hero { text-align: center; padding: 5rem 0 3rem; position: relative; }
-    .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; background: radial-gradient(ellipse at center, var(--glow-purple) 0%, rgba(59,130,246,0.06) 50%, transparent 70%); pointer-events: none; }
-    .hero-content { position: relative; z-index: 1; }
-    .hero-sub { font-size: 0.82rem; color: var(--accent-purple); letter-spacing: 0.06em; margin-bottom: 0.75rem; text-transform: uppercase; }
-    .hero h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.75rem; color: #fff; }
-    .hero p { color: var(--text-secondary); font-size: 1.05rem; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.7; font-family: 'Roboto', sans-serif; }
-    .hero-badges { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
-    .badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
-    .badge-primary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
-    .badge-primary:hover { border-color: var(--accent-purple); box-shadow: 0 0 20px var(--glow-purple); }
-    .badge-accent { background: rgba(139,92,246,0.1); color: var(--accent-purple); border: 1px solid rgba(139,92,246,0.2); }
-    .badge-accent:hover { background: rgba(139,92,246,0.18); }
+    .wrap {
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
 
-    .stats { display: flex; justify-content: center; gap: 3rem; padding: 2rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
-    .stat { text-align: center; }
-    .stat-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
-    .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.15rem; }
+    /* Header */
+    header {
+      padding: 3rem 0 0;
+      border-bottom: 1px solid var(--border);
+    }
+    header .wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-bottom: 1.5rem;
+    }
+    .logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+    .logo span { color: var(--text); }
+    header nav { display: flex; gap: 1.5rem; }
+    header nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    header nav a:hover { color: var(--text); }
 
-    .search-wrapper { max-width: 480px; margin: 0 auto 3rem; position: relative; }
-    .search-wrapper svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-    .search-input { width: 100%; padding: 0.7rem 1rem 0.7rem 2.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 0.85rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-    .search-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px var(--glow-purple); }
-    .search-input::placeholder { color: var(--text-muted); }
+    /* Intro */
+    .intro {
+      padding: 4rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .intro h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.75rem;
+      font-weight: 400;
+      line-height: 1.15;
+      color: #f5f5f5;
+      max-width: 28rem;
+      margin-bottom: 1rem;
+    }
+    .intro h1 em {
+      font-style: italic;
+    }
+    .intro p {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      max-width: 32rem;
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+    }
+    .intro .meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      letter-spacing: 0.03em;
+    }
+    .intro .meta b { color: var(--text-dim); font-weight: 500; }
 
-    .section { margin-bottom: 3rem; }
-    .section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-    .section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .section-dot.official { background: var(--accent-blue); box-shadow: 0 0 8px rgba(59,130,246,0.4); }
-    .section-dot.community { background: var(--accent-green); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
-    .section h2 { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
-    .section-count { font-size: 0.7rem; color: var(--text-muted); background: var(--bg-card); padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border); }
+    /* Search */
+    .search {
+      padding: 2rem 0;
+    }
+    .search input {
+      width: 100%;
+      max-width: 24rem;
+      padding: 0.6rem 0.75rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search input:focus { border-color: var(--text-faint); }
+    .search input::placeholder { color: var(--text-faint); }
 
-    .plugin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.6rem; }
-    .plugin-card { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: all 0.15s; }
-    .plugin-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
-    .plugin-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; margin-top: 0.1rem; }
-    .plugin-icon.official { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.15); }
-    .plugin-icon.community { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.15); }
-    .plugin-info { flex: 1; min-width: 0; }
-    .plugin-name { font-weight: 500; font-size: 0.85rem; color: #fff; display: flex; align-items: center; gap: 0.4rem; }
-    .plugin-tag { font-size: 0.55rem; font-weight: 500; padding: 0.1rem 0.35rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
-    .plugin-tag.official { background: rgba(59,130,246,0.12); color: var(--accent-blue); }
-    .plugin-tag.verified { background: rgba(16,185,129,0.12); color: var(--accent-green); }
-    .plugin-desc { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.15rem; line-height: 1.5; font-family: 'Roboto', sans-serif; }
-    .plugin-author { color: var(--text-muted); font-size: 0.68rem; margin-top: 0.25rem; }
-    .plugin-author a { color: var(--text-secondary); text-decoration: none; }
-    .plugin-author a:hover { color: var(--accent-purple); }
-    .plugin-arrow { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.4rem; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
-    .plugin-card:hover .plugin-arrow { opacity: 1; }
+    /* Sections */
+    .section { padding: 2.5rem 0 0; }
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-    .category-label { font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.6rem; margin-top: 1.25rem; padding-left: 0.25rem; }
-    .category-label:first-child { margin-top: 0; }
-    .empty { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; display: none; }
+    /* Plugin rows */
+    .list { list-style: none; }
+    .list li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .list li:last-child { border-bottom: none; }
+    .list li:hover { background: var(--surface); }
+    .list .name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      min-width: 9rem;
+    }
+    .list .name a { color: inherit; }
+    .list .name a:hover { color: var(--blue); }
+    .list .desc {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      flex: 1;
+      min-width: 0;
+    }
+    .list .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      padding: 0.12rem 0.4rem;
+      border-radius: 3px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .tag.official { background: rgba(59,130,246,0.1); color: var(--blue); }
+    .tag.community { background: rgba(34,197,94,0.08); color: var(--green); }
 
-    footer { text-align: center; padding: 3rem 0 2rem; border-top: 1px solid var(--border); margin-top: 2rem; }
-    footer p { color: var(--text-muted); font-size: 0.78rem; }
-    footer a { color: var(--accent-purple); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-    .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.75rem; }
-    .footer-links a { color: var(--text-muted); font-size: 0.72rem; }
-    .footer-links a:hover { color: var(--text-primary); text-decoration: none; }
+    .category {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      padding: 1.25rem 0 0.4rem;
+      font-weight: 500;
+    }
+
+    .empty {
+      display: none;
+      font-size: 0.82rem;
+      color: var(--text-faint);
+      padding: 3rem 0;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem 0 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    footer p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-faint);
+    }
+    footer a { color: var(--text-dim); }
+    footer a:hover { color: var(--text); }
 
     @media (max-width: 640px) {
-      .hero h1 { font-size: 1.75rem; }
-      .stats { gap: 1.5rem; }
-      .stat-value { font-size: 1.4rem; }
-      .plugin-grid { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
+      .intro h1 { font-size: 2rem; }
+      header nav { display: none; }
+      .list li { flex-wrap: wrap; gap: 0.3rem 0.75rem; }
+      .list .name { min-width: auto; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="/" class="nav-logo">⬡ <span class="gradient-text">Codex Plugins</span></a>
-      <div class="nav-links">
+
+  <header>
+    <div class="wrap">
+      <div class="logo"><span>Codex Plugins</span> / directory</div>
+      <nav>
         <a href="https://github.com/internet-dot/awesome-codex-plugins" target="_blank" rel="noopener">GitHub</a>
         <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Submit</a>
-      </div>
-    </nav>
+      </nav>
+    </div>
+  </header>
 
-    <div class="hero">
-      <div class="hero-content">
-        <div class="hero-sub">curated directory</div>
-        <h1>Awesome <span class="gradient-text">Codex Plugins</span></h1>
-        <p>A curated list of OpenAI Codex plugins. All community entries verified with a valid .codex-plugin manifest.</p>
-        <div class="hero-badges">
-          <a href="https://github.com/internet-dot/awesome-codex-plugins" class="badge badge-primary" target="_blank" rel="noopener">⭐ Star on GitHub</a>
-          <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" class="badge badge-accent" target="_blank" rel="noopener">+ Submit a Plugin</a>
-        </div>
-      </div>
+  <div class="wrap">
+    <div class="intro">
+      <h1>Verified plugins for<br><em>OpenAI Codex</em></h1>
+      <p>Community-maintained directory of Codex plugins. Every entry verified to include a valid <code style="font-family:'IBM Plex Mono',monospace;font-size:0.82em;padding:0.1em 0.3em;background:var(--surface);border-radius:3px">.codex-plugin</code> manifest.</p>
+      <div class="meta"><b id="total">26</b> plugins &middot; <b id="official-n">12</b> official &middot; <b id="community-n">14</b> community</div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="stat-value" id="official-count">12</div><div class="stat-label">Official</div></div>
-      <div class="stat"><div class="stat-value" id="community-count">14</div><div class="stat-label">Community</div></div>
-      <div class="stat"><div class="stat-value" id="total-count">26</div><div class="stat-label">Total</div></div>
+    <div class="search">
+      <input type="text" id="q" placeholder="filter..." autocomplete="off">
     </div>
 
-    <div class="search-wrapper">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg>
-      <input type="text" class="search-input" id="search" placeholder="search plugins..." autocomplete="off">
+    <div class="section" id="sec-official">
+      <div class="section-label">Official</div>
+      <ul class="list" id="list-official"></ul>
     </div>
 
-    <div id="official-section" class="section">
-      <div class="section-header">
-        <div class="section-dot official"></div>
-        <h2>Official Plugins</h2>
-        <span class="section-count" id="official-badge">12</span>
-      </div>
-      <div class="plugin-grid" id="official-grid"></div>
+    <div class="section" id="sec-community">
+      <div class="section-label">Community</div>
+      <div id="cats"></div>
     </div>
 
-    <div id="community-section" class="section">
-      <div class="section-header">
-        <div class="section-dot community"></div>
-        <h2>Community Plugins</h2>
-        <span class="section-count" id="community-badge">14</span>
-      </div>
-      <div id="community-categories"></div>
-    </div>
-
-    <div class="empty" id="empty">No plugins found</div>
+    <div class="empty" id="empty">No results.</div>
 
     <footer>
-      <p>open source · <a href="https://opensource.org/licenses/Apache-2.0" target="_blank" rel="noopener">Apache 2.0</a></p>
+      <p>Open source, <a href="https://opensource.org/licenses/Apache-2.0" target="_blank" rel="noopener">Apache 2.0</a>.</p>
     </footer>
   </div>
 
   <script>
-    const official = [
-      { name: "Box", desc: "Access and manage files", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Cloudflare", desc: "Manage Workers, Pages, DNS, and infrastructure", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Figma", desc: "Inspect designs, extract specs, and document components", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "GitHub", desc: "Review changes, manage issues, and interact with repositories", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Gmail", desc: "Read, search, and compose emails", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Google Drive", desc: "Edit and manage files in Google Drive", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Hugging Face", desc: "Browse models, datasets, and spaces", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Linear", desc: "Create and manage issues, projects, and workflows", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Notion", desc: "Create and edit pages, databases, and content", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Sentry", desc: "Monitor errors, triage issues, and track performance", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Slack", desc: "Send messages, search channels, manage conversations", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Vercel", desc: "Deploy, preview, and manage Vercel projects", author: "OpenAI", url: "https://developers.openai.com/codex/plugins" }
+    const O = [
+      ["Box","Access and manage files","https://developers.openai.com/codex/plugins"],
+      ["Cloudflare","Manage Workers, Pages, DNS, and infrastructure","https://developers.openai.com/codex/plugins"],
+      ["Figma","Inspect designs, extract specs, document components","https://developers.openai.com/codex/plugins"],
+      ["GitHub","Review changes, manage issues, interact with repos","https://developers.openai.com/codex/plugins"],
+      ["Gmail","Read, search, compose emails","https://developers.openai.com/codex/plugins"],
+      ["Google Drive","Edit and manage files","https://developers.openai.com/codex/plugins"],
+      ["Hugging Face","Browse models, datasets, spaces","https://developers.openai.com/codex/plugins"],
+      ["Linear","Issues, projects, workflows","https://developers.openai.com/codex/plugins"],
+      ["Notion","Pages, databases, content","https://developers.openai.com/codex/plugins"],
+      ["Sentry","Error monitoring, triage, performance","https://developers.openai.com/codex/plugins"],
+      ["Slack","Messages, channels, conversations","https://developers.openai.com/codex/plugins"],
+      ["Vercel","Deploy, preview, manage projects","https://developers.openai.com/codex/plugins"]
     ];
 
-    const community = [
-      { name: "Registry Broker", desc: "Delegate tasks to specialist AI agents via the HOL Registry", author: "HOL", authorUrl: "https://github.com/hashgraph-online", url: "https://github.com/hashgraph-online/registry-broker-codex-plugin", cat: "Development & Workflow" },
-      { name: "Project Autopilot", desc: "Structured project workflow with planning, execution, and handoff", author: "AlexMi64", authorUrl: "https://github.com/AlexMi64", url: "https://github.com/AlexMi64/codex-project-autopilot", cat: "Development & Workflow" },
-      { name: "Codex Reviewer", desc: "Second-pass review of Claude-driven plans and implementations", author: "schuettc", authorUrl: "https://github.com/schuettc", url: "https://github.com/schuettc/codex-reviewer", cat: "Development & Workflow" },
-      { name: "HOTL Plugin", desc: "Human-on-the-Loop coding workflows with planning, review, and verification", author: "yimwoo", authorUrl: "https://github.com/yimwoo", url: "https://github.com/yimwoo/hotl-plugin", cat: "Development & Workflow" },
-      { name: "AgentOps", desc: "DevOps layer for coding agents with flow, feedback, and persistent memory", author: "boshu2", authorUrl: "https://github.com/boshu2", url: "https://github.com/boshu2/agentops", cat: "Development & Workflow" },
-      { name: "Codex Be Serious", desc: "Enforce formal, textbook-grade written register across all agent output", author: "lulucatdev", authorUrl: "https://github.com/lulucatdev", url: "https://github.com/lulucatdev/codex-be-serious", cat: "Development & Workflow" },
-      { name: "Chrome DevTools", desc: "One-click Codex plugin wrapper for chrome-devtools-mcp", author: "win4r", authorUrl: "https://github.com/win4r", url: "https://github.com/win4r/chrome-devtools-codex-plugin", cat: "Tools & Integrations" },
-      { name: "Launch Fast", desc: "Official Launch Fast plugin adapter for rapid SaaS deployment", author: "BlockchainHB", authorUrl: "https://github.com/BlockchainHB", url: "https://github.com/BlockchainHB/launchfast_codex_plugin", cat: "Tools & Integrations" },
-      { name: "PapersFlow", desc: "Paper discovery, citation verification, graph exploration, and DeepScan", author: "papersflow-ai", authorUrl: "https://github.com/papersflow-ai", url: "https://github.com/papersflow-ai/papersflow-codex-plugin", cat: "Tools & Integrations" },
-      { name: "Apple Productivity", desc: "Local Apple Calendar and Reminders tooling for macOS", author: "matk0shub", authorUrl: "https://github.com/matk0shub", url: "https://github.com/matk0shub/apple-productivity-mcp", cat: "Tools & Integrations" },
-      { name: "Yandex Direct", desc: "Plugin bundle for Yandex Direct, Wordstat, Metrika, and Roistat", author: "nebelov", authorUrl: "https://github.com/nebelov", url: "https://github.com/nebelov/yandex-direct-for-all", cat: "Tools & Integrations" },
-      { name: "OpenProject", desc: "Team collaboration via OpenProject integration", author: "varaprasadreddy9676", authorUrl: "https://github.com/varaprasadreddy9676", url: "https://github.com/varaprasadreddy9676/team-codex-plugins", cat: "Tools & Integrations" },
-      { name: "OrgX", desc: "MCP access and initiative-aware skills for organizational workflows", author: "useorgx", authorUrl: "https://github.com/useorgx", url: "https://github.com/useorgx/orgx-codex-plugin", cat: "Tools & Integrations" },
-      { name: "Codex Mem", desc: "Capture, compress, and inject session context back into future sessions", author: "2kDarki", authorUrl: "https://github.com/2kDarki", url: "https://github.com/2kDarki/codex-mem", cat: "Tools & Integrations" }
+    const C = [
+      ["Registry Broker","Delegate tasks to specialist agents via HOL Registry","https://github.com/hashgraph-online/registry-broker-codex-plugin","Development"],
+      ["Project Autopilot","Structured project workflow: planning, execution, handoff","https://github.com/AlexMi64/codex-project-autopilot","Development"],
+      ["Codex Reviewer","Second-pass review of Claude-driven plans","https://github.com/schuettc/codex-reviewer","Development"],
+      ["HOTL Plugin","Human-on-the-Loop coding workflows","https://github.com/yimwoo/hotl-plugin","Development"],
+      ["AgentOps","DevOps for coding agents with persistent memory","https://github.com/boshu2/agentops","Development"],
+      ["Codex Be Serious","Enforce formal written register across output","https://github.com/lulucatdev/codex-be-serious","Development"],
+      ["Chrome DevTools","Wrapper for chrome-devtools-mcp","https://github.com/win4r/chrome-devtools-codex-plugin","Integrations"],
+      ["Launch Fast","Rapid SaaS deployment adapter","https://github.com/BlockchainHB/launchfast_codex_plugin","Integrations"],
+      ["PapersFlow","Paper discovery, citation verification, DeepScan","https://github.com/papersflow-ai/papersflow-codex-plugin","Integrations"],
+      ["Apple Productivity","Calendar and Reminders for macOS","https://github.com/matk0shub/apple-productivity-mcp","Integrations"],
+      ["Yandex Direct","Yandex Direct, Wordstat, Metrika, Roistat","https://github.com/nebelov/yandex-direct-for-all","Integrations"],
+      ["OpenProject","Team collaboration via OpenProject","https://github.com/varaprasadreddy9676/team-codex-plugins","Integrations"],
+      ["OrgX","MCP access and initiative-aware skills","https://github.com/useorgx/orgx-codex-plugin","Integrations"],
+      ["Codex Mem","Capture and inject session context","https://github.com/2kDarki/codex-mem","Integrations"]
     ];
 
-    function card(p, official) {
-      const authorHtml = p.authorUrl
-        ? `<a href="${p.authorUrl}" onclick="event.stopPropagation()">${p.author}</a>`
-        : p.author;
-      return `<a href="${p.url}" class="plugin-card" target="_blank" rel="noopener">
-        <div class="plugin-icon ${official ? 'official' : 'community'}">${official ? '⬡' : '◆'}</div>
-        <div class="plugin-info">
-          <div class="plugin-name">${p.name} <span class="plugin-tag ${official ? 'official' : 'verified'}">${official ? 'Official' : 'Verified'}</span></div>
-          <div class="plugin-desc">${p.desc}</div>
-          <div class="plugin-author">${authorHtml}</div>
-        </div>
-        <div class="plugin-arrow">→</div>
-      </a>`;
+    function row([name, desc, url, type], isOfficial) {
+      return `<li><span class="name"><a href="${url}" target="_blank" rel="noopener">${name}</a></span><span class="desc">${desc}</span><span class="tag ${isOfficial ? 'official' : 'community'}">${isOfficial ? 'Official' : 'Verified'}</span></li>`;
     }
 
-    function render(list, isOfficial) {
-      return list.map(p => card(p, isOfficial)).join('');
-    }
-
-    const officialGrid = document.getElementById('official-grid');
-    const communityCats = document.getElementById('community-categories');
+    const q = document.getElementById('q');
+    const lo = document.getElementById('list-official');
+    const cats = document.getElementById('cats');
     const empty = document.getElementById('empty');
-    const search = document.getElementById('search');
-    const officialSection = document.getElementById('official-section');
-    const communitySection = document.getElementById('community-section');
-    const categories = [...new Set(community.map(p => p.cat))];
+    const secO = document.getElementById('sec-official');
+    const secC = document.getElementById('sec-community');
 
-    function renderAll() {
-      const q = search.value.toLowerCase();
-      const fo = q ? official.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) : official;
-      const fc = q ? community.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)) : community;
+    function render() {
+      const s = q.value.toLowerCase();
+      const fo = s ? O.filter(([n,d]) => n.toLowerCase().includes(s) || d.toLowerCase().includes(s)) : O;
+      const fc = s ? C.filter(([n,d]) => n.toLowerCase().includes(s) || d.toLowerCase().includes(s)) : C;
 
-      officialSection.style.display = fo.length ? '' : 'none';
-      communitySection.style.display = fc.length ? '' : 'none';
-      empty.style.display = (fo.length || fc.length) ? 'none' : 'block';
+      secO.style.display = fo.length ? '' : 'none';
+      secC.style.display = fc.length ? '' : 'none';
+      empty.style.display = (fo.length || fc.length) ? 'none' : '';
 
-      officialGrid.innerHTML = render(fo, true);
-      document.getElementById('official-badge').textContent = fo.length;
+      lo.innerHTML = fo.map(p => row(p, true)).join('');
 
-      const cats = q ? [...new Set(fc.map(p => p.cat))] : categories;
-      communityCats.innerHTML = cats.map(cat => {
-        const items = fc.filter(p => p.cat === cat);
-        return `<div class="category-label">${cat}</div><div class="plugin-grid">${render(items, false)}</div>`;
-      }).join('');
-
-      document.getElementById('community-badge').textContent = fc.length;
+      const groups = {};
+      fc.forEach(p => { (groups[p[3]] = groups[p[3]] || []).push(p); });
+      cats.innerHTML = Object.entries(groups).map(([cat, items]) =>
+        `<div class="category">${cat}</div><ul class="list">${items.map(p => row(p, false)).join('')}</ul>`
+      ).join('');
     }
 
-    officialGrid.innerHTML = render(official, true);
-    communityCats.innerHTML = categories.map(cat => {
-      return `<div class="category-label">${cat}</div><div class="plugin-grid">${render(community.filter(p => p.cat === cat), false)}</div>`;
-    }).join('');
-    document.getElementById('official-count').textContent = official.length;
-    document.getElementById('community-count').textContent = community.length;
-    document.getElementById('total-count').textContent = official.length + community.length;
-
-    search.addEventListener('input', renderAll);
+    render();
+    q.addEventListener('input', render);
   </script>
 </body>
 </html>
