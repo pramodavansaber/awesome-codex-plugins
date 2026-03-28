@@ -8,428 +8,193 @@
   <meta property="og:title" content="Codex Plugins">
   <meta property="og:description" content="A curated directory of OpenAI Codex plugins.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>⬡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"Roboto Mono"', 'monospace'],
+            sans: ['Roboto', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            hol: {
+              purple: '#7C3AED',
+              'purple-light': '#A78BFA',
+              'purple-dark': '#5B21B6',
+              blue: '#3B82F6',
+              'blue-light': '#60A5FA',
+              cyan: '#06B6D4',
+            },
+            surface: {
+              50: '#FAFAFA',
+              100: '#F4F4F5',
+              200: '#E4E4E7',
+              300: '#D4D4D8',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --bg: #0a0a10;
-      --bg-raised: #111119;
-      --bg-hover: #18181f;
-      --fg: #d4d4dc;
-      --fg-secondary: #7a7a8e;
-      --fg-muted: #4a4a5c;
-      --accent: #8b5cf6;
-      --accent-muted: rgba(139,92,246,0.12);
-      --green: #22c55e;
-      --border: #1e1e2a;
-      --border-hover: #2c2c3a;
-      --font-body: 'Onest', system-ui, -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    body { font-family: 'Roboto', system-ui, sans-serif; }
+    .font-mono { font-family: 'Roboto Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #06B6D4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    a { color: inherit; }
-
-    /* ─── Page ─── */
-    .page { max-width: 64rem; margin: 0 auto; padding: 0 2rem; }
-
-    /* ─── Header ─── */
-    header {
-      padding: 5rem 0 3.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-label {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1.25rem;
-    }
-
-    header h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      max-width: 28rem;
-    }
-
-    header p {
-      margin-top: 1rem;
-      font-size: 1.05rem;
-      color: var(--fg-secondary);
-      max-width: 36rem;
-      line-height: 1.7;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.75rem;
-    }
-
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 0.55rem 1.1rem;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--fg-secondary);
-    }
-    .btn-ghost:hover { border-color: var(--fg-muted); color: var(--fg); }
-
-    .btn-primary {
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      color: #fff;
-    }
-    .btn-primary:hover { background: #7c4fe0; }
-
-    /* ─── Nav ─── */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-brand {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--fg-muted);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-brand strong { color: var(--fg); }
-
-    .nav-links { display: flex; gap: 1.25rem; }
-    .nav-links a {
-      font-size: 0.82rem;
-      color: var(--fg-muted);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .nav-links a:hover { color: var(--fg); }
-
-    /* ─── Search ─── */
-    .search-wrap {
-      padding: 2rem 0 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .search-input {
-      width: 100%;
-      max-width: 20rem;
-      padding: 0.55rem 0.75rem;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--fg);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-input:focus { border-color: var(--fg-muted); }
-    .search-input::placeholder { color: var(--fg-muted); }
-
-    /* ─── Section ─── */
-    .section {
-      padding: 2.5rem 0 1.5rem;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .section-head h2 {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--fg-muted);
-    }
-
-    .section-head .count {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--fg-muted);
-      background: var(--bg-raised);
-      padding: 0.1rem 0.45rem;
-      border-radius: 4px;
-    }
-
-    .category-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--fg-muted);
-      margin: 1.75rem 0 0.75rem;
-    }
-
-    .category-label:first-child { margin-top: 0; }
-
-    /* ─── Plugin Row ─── */
-    .plugin-list { list-style: none; }
-
-    .plugin-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.65rem 0;
-      border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.1s;
-      border-radius: 4px;
-    }
-    .plugin-row:hover { background: var(--bg-hover); }
-    .plugin-row:last-child { border-bottom: none; }
-
-    .plugin-row .name {
-      font-weight: 500;
-      font-size: 0.88rem;
-      color: #fff;
-      white-space: nowrap;
-      min-width: 10rem;
-    }
-
-    .plugin-row .desc {
-      flex: 1;
-      font-size: 0.82rem;
-      color: var(--fg-secondary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .plugin-row .source {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--fg-muted);
-      white-space: nowrap;
-    }
-
-    .plugin-row .arrow {
-      font-size: 0.75rem;
-      color: var(--fg-muted);
-      opacity: 0;
-      transition: opacity 0.1s;
-      flex-shrink: 0;
-    }
-    .plugin-row:hover .arrow { opacity: 1; }
-
-    .tag {
-      font-family: var(--font-mono);
-      font-size: 0.55rem;
-      font-weight: 500;
-      padding: 0.12rem 0.4rem;
-      border-radius: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      flex-shrink: 0;
-    }
-
-    .tag-official { background: rgba(139,92,246,0.1); color: var(--accent); }
-    .tag-verified { background: rgba(34,197,94,0.1); color: var(--green); }
-
-    /* ─── Empty ─── */
-    .empty {
-      text-align: center;
-      padding: 3rem;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      color: var(--fg-muted);
-      display: none;
-    }
-
-    /* ─── Footer ─── */
-    footer {
-      padding: 3rem 0 2rem;
-      border-top: 1px solid var(--border);
-      margin-top: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--fg-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    footer a { color: var(--fg-secondary); text-decoration: none; }
-    footer a:hover { color: var(--fg); }
-
-    /* ─── Responsive ─── */
-    @media (max-width: 640px) {
-      .page { padding: 0 1.25rem; }
-      header { padding: 3rem 0 2.5rem; }
-      .plugin-row .desc { display: none; }
-      .plugin-row .name { min-width: auto; }
-      .plugin-row { gap: 0.6rem; }
-      .header-actions { flex-direction: column; align-items: flex-start; }
-      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
-      .nav-links { display: none; }
+    .gradient-border {
+      border-image: linear-gradient(135deg, #7C3AED, #3B82F6, #06B6D4) 1;
     }
   </style>
 </head>
-<body>
-  <div class="page">
-    <nav>
-      <a href="/" class="nav-brand"><strong>Codex Plugins</strong> / directory</a>
-      <div class="nav-links">
-        <a href="https://github.com/internet-dot/awesome-codex-plugins" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a>
-      </div>
-    </nav>
+<body class="bg-white text-gray-900 antialiased">
 
-    <header>
-      <div class="header-label">curated directory</div>
-      <h1>OpenAI Codex Plugins</h1>
-      <p>Verified plugins for Codex, OpenAI's coding agent. Every community entry has a valid .codex-plugin manifest.</p>
-      <div class="header-actions">
-        <a href="https://github.com/internet-dot/awesome-codex-plugins" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
-        <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" class="btn btn-primary" target="_blank" rel="noopener">Submit a plugin</a>
+  <!-- Nav -->
+  <nav class="border-b border-gray-200">
+    <div class="max-w-3xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="/" class="font-mono text-sm text-gray-500 hover:text-gray-900 transition-colors">
+        <span class="text-gray-900 font-medium">codex-plugins</span> <span class="text-gray-300">/</span> directory
+      </a>
+      <div class="flex gap-5">
+        <a href="https://github.com/internet-dot/awesome-codex-plugins" target="_blank" rel="noopener" class="font-mono text-xs text-gray-400 hover:text-gray-900 transition-colors">GitHub</a>
+        <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" class="font-mono text-xs text-gray-400 hover:text-gray-900 transition-colors">Submit</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-3xl mx-auto px-5">
+
+    <!-- Hero -->
+    <header class="pt-16 pb-12 border-b border-gray-200">
+      <p class="font-mono text-xs uppercase tracking-widest text-hol-purple mb-4">curated directory</p>
+      <h1 class="font-mono text-4xl font-bold leading-tight text-gray-900 max-w-md">
+        Verified plugins for <span class="gradient-text">OpenAI Codex</span>
+      </h1>
+      <p class="mt-4 text-gray-500 max-w-lg leading-relaxed">
+        Community-maintained directory of Codex plugins. Every entry verified to include a valid <code class="font-mono text-xs bg-surface-100 px-1.5 py-0.5 rounded text-gray-700">.codex-plugin</code> manifest.
+      </p>
+      <div class="flex gap-3 mt-6">
+        <a href="https://github.com/internet-dot/awesome-codex-plugins" target="_blank" rel="noopener" class="font-mono text-xs font-medium px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900 transition-all">View on GitHub</a>
+        <a href="https://github.com/internet-dot/awesome-codex-plugins/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" class="font-mono text-xs font-medium px-4 py-2 rounded-lg bg-hol-purple text-white hover:bg-hol-purple-dark transition-all">Submit a plugin</a>
       </div>
     </header>
 
-    <div class="search-wrap">
-      <input type="text" class="search-input" id="search" placeholder="filter..." autocomplete="off">
+    <!-- Search -->
+    <div class="py-5 border-b border-gray-200">
+      <input type="text" id="q" placeholder="filter..." autocomplete="off"
+        class="w-full max-w-xs font-mono text-sm px-3 py-2 bg-surface-50 border border-gray-200 rounded-lg outline-none focus:border-hol-purple/50 transition-colors placeholder:text-gray-300">
     </div>
 
-    <section id="official-section" class="section">
-      <div class="section-head">
-        <h2>Official</h2>
-        <span class="count" id="official-count">12</span>
+    <!-- Official -->
+    <section id="sec-official" class="pt-8 pb-4">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="font-mono text-xs font-medium uppercase tracking-widest text-gray-400">Official</h2>
+        <span class="font-mono text-[10px] text-gray-300 bg-surface-100 px-1.5 py-0.5 rounded" id="official-count">12</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
       </div>
-      <ul class="plugin-list" id="official-list"></ul>
+      <ul class="list-none divide-y divide-gray-100" id="list-official"></ul>
     </section>
 
-    <section id="community-section" class="section">
-      <div class="section-head">
-        <h2>Community</h2>
-        <span class="count" id="community-count">14</span>
+    <!-- Community -->
+    <section id="sec-community" class="pt-6 pb-4">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="font-mono text-xs font-medium uppercase tracking-widest text-gray-400">Community</h2>
+        <span class="font-mono text-[10px] text-gray-300 bg-surface-100 px-1.5 py-0.5 rounded" id="community-count">14</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
       </div>
-      <div id="community-list"></div>
+      <div id="cats"></div>
     </section>
 
-    <div class="empty" id="empty">Nothing matches your filter.</div>
+    <div id="empty" class="hidden py-16 text-center font-mono text-sm text-gray-300">No results.</div>
 
-    <footer>
-      <span>Apache 2.0 · <a href="https://hol.org" target="_blank" rel="noopener">HOL</a></span>
-      <span>26 plugins · updated daily</span>
+    <!-- Footer -->
+    <footer class="py-10 mt-4 border-t border-gray-200">
+      <p class="font-mono text-xs text-gray-300">
+        Apache 2.0 &middot; <a href="https://hol.org" target="_blank" rel="noopener" class="text-gray-400 hover:text-gray-900 transition-colors">HOL</a> &middot; <span id="total">26</span> plugins
+      </p>
     </footer>
   </div>
 
   <script>
-    const official = [
-      { name: "Box", desc: "Access and manage files", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Cloudflare", desc: "Workers, Pages, DNS, infrastructure", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Figma", desc: "Inspect designs, extract specs, document components", url: "https://developers.openai.com/codex/plugins" },
-      { name: "GitHub", desc: "Review changes, manage issues, interact with repos", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Gmail", desc: "Read, search, compose emails", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Google Drive", desc: "Edit and manage files in Google Drive", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Hugging Face", desc: "Browse models, datasets, spaces", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Linear", desc: "Issues, projects, workflows", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Notion", desc: "Pages, databases, content", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Sentry", desc: "Error monitoring, triage, performance", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Slack", desc: "Messages, channels, conversations", url: "https://developers.openai.com/codex/plugins" },
-      { name: "Vercel", desc: "Deploy, preview, manage projects", url: "https://developers.openai.com/codex/plugins" }
+    const O = [
+      ["Box","Access and manage files","https://developers.openai.com/codex/plugins"],
+      ["Cloudflare","Manage Workers, Pages, DNS, and infrastructure","https://developers.openai.com/codex/plugins"],
+      ["Figma","Inspect designs, extract specs, document components","https://developers.openai.com/codex/plugins"],
+      ["GitHub","Review changes, manage issues, interact with repos","https://developers.openai.com/codex/plugins"],
+      ["Gmail","Read, search, compose emails","https://developers.openai.com/codex/plugins"],
+      ["Google Drive","Edit and manage files","https://developers.openai.com/codex/plugins"],
+      ["Hugging Face","Browse models, datasets, spaces","https://developers.openai.com/codex/plugins"],
+      ["Linear","Issues, projects, workflows","https://developers.openai.com/codex/plugins"],
+      ["Notion","Pages, databases, content","https://developers.openai.com/codex/plugins"],
+      ["Sentry","Error monitoring, triage, performance","https://developers.openai.com/codex/plugins"],
+      ["Slack","Messages, channels, conversations","https://developers.openai.com/codex/plugins"],
+      ["Vercel","Deploy, preview, manage projects","https://developers.openai.com/codex/plugins"]
     ];
 
-    const community = [
-      { name: "Registry Broker", desc: "Delegate tasks to specialist AI agents via the HOL Registry", author: "HOL", url: "https://github.com/hashgraph-online/registry-broker-codex-plugin", cat: "Development" },
-      { name: "Project Autopilot", desc: "Idea into structured workflow: planning, execution, handoff", author: "AlexMi64", url: "https://github.com/AlexMi64/codex-project-autopilot", cat: "Development" },
-      { name: "Codex Reviewer", desc: "Second-pass review of Claude-driven plans and implementations", author: "schuettc", url: "https://github.com/schuettc/codex-reviewer", cat: "Development" },
-      { name: "HOTL Plugin", desc: "Human-on-the-Loop coding with planning, review, verification", author: "yimwoo", url: "https://github.com/yimwoo/hotl-plugin", cat: "Development" },
-      { name: "AgentOps", desc: "DevOps for coding agents: flow, feedback, persistent memory", author: "boshu2", url: "https://github.com/boshu2/agentops", cat: "Development" },
-      { name: "Codex Be Serious", desc: "Enforce formal, textbook-grade written register", author: "lulucatdev", url: "https://github.com/lulucatdev/codex-be-serious", cat: "Development" },
-      { name: "Chrome DevTools", desc: "One-click wrapper for chrome-devtools-mcp", author: "win4r", url: "https://github.com/win4r/chrome-devtools-codex-plugin", cat: "Integrations" },
-      { name: "Launch Fast", desc: "Launch Fast plugin adapter for rapid SaaS deployment", author: "BlockchainHB", url: "https://github.com/BlockchainHB/launchfast_codex_plugin", cat: "Integrations" },
-      { name: "PapersFlow", desc: "Paper discovery, citation verification, DeepScan", author: "papersflow-ai", url: "https://github.com/papersflow-ai/papersflow-codex-plugin", cat: "Integrations" },
-      { name: "Apple Productivity", desc: "Local Calendar and Reminders tooling for macOS", author: "matk0shub", url: "https://github.com/matk0shub/apple-productivity-mcp", cat: "Integrations" },
-      { name: "Yandex Direct", desc: "Yandex Direct, Wordstat, Metrika, Roistat bundle", author: "nebelov", url: "https://github.com/nebelov/yandex-direct-for-all", cat: "Integrations" },
-      { name: "OpenProject", desc: "Team collaboration via OpenProject integration", author: "varaprasadreddy9676", url: "https://github.com/varaprasadreddy9676/team-codex-plugins", cat: "Integrations" },
-      { name: "OrgX", desc: "MCP access and initiative-aware skills", author: "useorgx", url: "https://github.com/useorgx/orgx-codex-plugin", cat: "Integrations" },
-      { name: "Codex Mem", desc: "Capture, compress, inject session context", author: "2kDarki", url: "https://github.com/2kDarki/codex-mem", cat: "Integrations" }
+    const C = [
+      ["Registry Broker","Delegate tasks to specialist agents via HOL Registry","https://github.com/hashgraph-online/registry-broker-codex-plugin","Development"],
+      ["Project Autopilot","Structured project workflow: planning, execution, handoff","https://github.com/AlexMi64/codex-project-autopilot","Development"],
+      ["Codex Reviewer","Second-pass review of Claude-driven plans","https://github.com/schuettc/codex-reviewer","Development"],
+      ["HOTL Plugin","Human-on-the-Loop coding workflows","https://github.com/yimwoo/hotl-plugin","Development"],
+      ["AgentOps","DevOps for coding agents with persistent memory","https://github.com/boshu2/agentops","Development"],
+      ["Codex Be Serious","Enforce formal written register across output","https://github.com/lulucatdev/codex-be-serious","Development"],
+      ["Chrome DevTools","Wrapper for chrome-devtools-mcp","https://github.com/win4r/chrome-devtools-codex-plugin","Integrations"],
+      ["Launch Fast","Rapid SaaS deployment adapter","https://github.com/BlockchainHB/launchfast_codex_plugin","Integrations"],
+      ["PapersFlow","Paper discovery, citation verification, DeepScan","https://github.com/papersflow-ai/papersflow-codex-plugin","Integrations"],
+      ["Apple Productivity","Calendar and Reminders for macOS","https://github.com/matk0shub/apple-productivity-mcp","Integrations"],
+      ["Yandex Direct","Yandex Direct, Wordstat, Metrika, Roistat","https://github.com/nebelov/yandex-direct-for-all","Integrations"],
+      ["OpenProject","Team collaboration via OpenProject","https://github.com/varaprasadreddy9676/team-codex-plugins","Integrations"],
+      ["OrgX","MCP access and initiative-aware skills","https://github.com/useorgx/orgx-codex-plugin","Integrations"],
+      ["Codex Mem","Capture and inject session context","https://github.com/2kDarki/codex-mem","Integrations"]
     ];
 
-    const row = (p, official) => `
-      <li>
-        <a href="${p.url}" class="plugin-row" target="_blank" rel="noopener">
-          <span class="name">${p.name}</span>
-          <span class="tag ${official ? 'tag-official' : 'tag-verified'}">${official ? 'official' : 'verified'}</span>
-          <span class="desc">${p.desc}</span>
-          ${official ? '' : `<span class="source">${p.author}</span>`}
-          <span class="arrow">→</span>
-        </a>
+    const row = ([name, desc, url], official) => `
+      <li class="group flex items-center gap-3 py-2.5 hover:bg-surface-50 -mx-3 px-3 rounded transition-colors cursor-pointer" onclick="window.open('${url}','_blank')">
+        <span class="font-mono text-sm font-medium text-gray-900 min-w-[9rem]">${name}</span>
+        <span class="flex-1 text-sm text-gray-400 truncate">${desc}</span>
+        <span class="font-mono text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded ${official ? 'bg-purple-50 text-hol-purple' : 'bg-emerald-50 text-emerald-600'}">${official ? 'Official' : 'Verified'}</span>
+        <span class="text-gray-300 group-hover:text-gray-500 transition-colors text-xs">→</span>
       </li>`;
 
-    const renderList = (items, official) => items.map(p => row(p, official)).join('');
-    const categories = [...new Set(community.map(p => p.cat))];
-
-    const render = () => {
-      const q = search.value.toLowerCase();
-      const fo = q ? official.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) : official;
-      const fc = q ? community.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)) : community;
-
-      officialSection.style.display = fo.length ? '' : 'none';
-      communitySection.style.display = fc.length ? '' : 'none';
-      empty.style.display = (fo.length || fc.length) ? 'none' : 'block';
-
-      officialList.innerHTML = renderList(fo, true);
-      officialCount.textContent = fo.length;
-      communityCount.textContent = fc.length;
-
-      const cats = q ? [...new Set(fc.map(p => p.cat))] : categories;
-      communityList.innerHTML = cats.map(cat => {
-        const items = fc.filter(p => p.cat === cat);
-        return `<div class="category-label">${cat}</div><ul class="plugin-list">${renderList(items, false)}</ul>`;
-      }).join('');
-    };
-
-    const officialSection = document.getElementById('official-section');
-    const communitySection = document.getElementById('community-section');
-    const officialList = document.getElementById('official-list');
-    const communityList = document.getElementById('community-list');
-    const officialCount = document.getElementById('official-count');
-    const communityCount = document.getElementById('community-count');
+    const q = document.getElementById('q');
+    const lo = document.getElementById('list-official');
+    const catsEl = document.getElementById('cats');
     const empty = document.getElementById('empty');
-    const search = document.getElementById('search');
+    const secO = document.getElementById('sec-official');
+    const secC = document.getElementById('sec-community');
+    const oCount = document.getElementById('official-count');
+    const cCount = document.getElementById('community-count');
+
+    function render() {
+      const s = q.value.toLowerCase();
+      const fo = s ? O.filter(([n,d]) => n.toLowerCase().includes(s) || d.toLowerCase().includes(s)) : O;
+      const fc = s ? C.filter(([n,d]) => n.toLowerCase().includes(s) || d.toLowerCase().includes(s)) : C;
+
+      secO.style.display = fo.length ? '' : 'none';
+      secC.style.display = fc.length ? '' : 'none';
+      empty.classList.toggle('hidden', fo.length || fc.length);
+      oCount.textContent = fo.length;
+      cCount.textContent = fc.length;
+
+      lo.innerHTML = fo.map(p => row(p, true)).join('');
+
+      const groups = {};
+      fc.forEach(p => { (groups[p[3]] = groups[p[3]] || []).push(p); });
+      catsEl.innerHTML = Object.entries(groups).map(([cat, items]) =>
+        `<p class="font-mono text-[10px] uppercase tracking-widest text-gray-300 font-medium mt-6 mb-2">${cat}</p><ul class="list-none divide-y divide-gray-100">${items.map(p => row(p, false)).join('')}</ul>`
+      ).join('');
+    }
 
     render();
-    search.addEventListener('input', render);
+    q.addEventListener('input', render);
   </script>
 </body>
 </html>
