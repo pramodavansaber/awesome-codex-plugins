@@ -131,7 +131,7 @@ codex-plugin-scanner ./my-plugin
 Add to your plugin's GitHub Actions as a PR gate:
 
 ```yaml
-- uses: hashgraph-online/codex-plugin-scanner/action@v1
+- uses: hashgraph-online/codex-plugin-scanner/action@v1.1.0
   with:
     plugin_dir: "."
     min_score: 70
