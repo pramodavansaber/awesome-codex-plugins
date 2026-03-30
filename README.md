@@ -11,6 +11,7 @@
 <p align="center">
   <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://hol.org/registry/plugins"><img src="https://img.shields.io/badge/Browse-Registry-green" alt="Browse Registry"></a>
 </p>
 
 <p align="center">
@@ -128,6 +129,28 @@ Currently no self-serve marketplace submission. Plugins are distributed via loca
 - [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code#readme) - Claude Code resources.
 - [awesome-coding-agents](https://github.com/e2b-dev/awesome-ai-agents#readme) - Curated list of AI coding agents.
 - [awesome-mcp-servers](https://github.com/wong2/awesome-mcp-servers#readme) - MCP server directory.
+- [HOL Plugin Registry](https://hol.org/registry/plugins) - Browse plugins with scanner-backed security analysis and trust scores. Auto-ingests this list and augments each plugin with detailed trust breakdowns, security labels, embeddable badges, and install guidance.
+
+## Plugin Trust Scores
+
+Every plugin in this list is automatically ingested by the [HOL Plugin Registry](https://hol.org/registry/plugins), which runs each through the [codex-plugin-scanner](https://github.com/hashgraph-online/codex-plugin-scanner) to produce a trust score and security analysis.
+
+Each plugin gets a detailed breakdown across six factors:
+
+- **Installability** - Can the plugin be installed and run without errors?
+- **Maintenance** - Is the repo actively maintained with clear documentation?
+- **MCP Posture** - How securely are MCP servers configured?
+- **Plugin Security** - Does the manifest follow security best practices?
+- **Provenance** - Can the publisher's identity be verified?
+- **Publisher Quality** - Does the publisher have a track record of quality releases?
+
+You can embed a trust badge in your plugin's README:
+
+```
+[![Plugin Name on HOL Registry (Trust Score)](https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3DOWNER%252FREPO%26metric%3Dtrust%26style%3Dfor-the-badge%26label%3DPlugin+Name)](https://hol.org/registry/plugins/OWNER%2FREPO)
+```
+
+Replace `OWNER%2FREPO` with your plugin's GitHub owner and repo name (URL-encoded slash). Metrics available: `trust`, `security`. Styles: `flat`, `flat-square`, `plastic`, `for-the-badge`, `social`.
 
 ## Contributing
 
