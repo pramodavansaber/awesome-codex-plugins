@@ -3,7 +3,7 @@
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
   "last_updated": "2026-03-30",
-  "total": 19,
+  "total": 20,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -38,6 +38,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/nyldn/claude-octopus/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Codex Agenteam",
+      "url": "https://github.com/yimwoo/codex-agenteam",
+      "owner": "yimwoo",
+      "repo": "codex-agenteam",
+      "description": "Specialist AI agents (researcher, PM, architect, developer, QA, reviewer) orchestrated as a configurable team pipeline.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/yimwoo/codex-agenteam/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Codex Multi Auth",
