@@ -115,6 +115,55 @@ $plugin-creator
 
 Currently no self-serve marketplace submission. Plugins are distributed via local marketplaces (`~/.agents/plugins/marketplace.json`), repo marketplaces (`$REPO_ROOT/.agents/plugins/marketplace.json`), or GitHub repos by pointing a marketplace source at a repo. OpenAI has stated third-party marketplace submissions are coming soon.
 
+## Scan Your Plugin
+
+Before submitting a plugin, run the [codex-plugin-scanner](https://github.com/hashgraph-online/codex-plugin-scanner) to check for security issues and best practices. It scores your plugin from 0-100 and generates actionable findings.
+
+### Quick Check
+
+```bash
+pip install codex-plugin-scanner
+codex-plugin-scanner ./my-plugin
+```
+
+### CI Integration
+
+Add to your plugin's GitHub Actions as a PR gate:
+
+```yaml
+- uses: hashgraph-online/codex-plugin-scanner/action@v1.1.0
+  with:
+    plugin_dir: "."
+    min_score: 70
+    fail_on_severity: high
+```
+
+### Pre-commit Hook
+
+Catch issues before they reach CI:
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/hashgraph-online/codex-plugin-scanner
+    rev: v1.1.0
+    hooks:
+      - id: codex-plugin-scanner
+```
+
+### What It Checks
+
+| Category | Max Points |
+|----------|-----------|
+| Manifest Validation | 25 |
+| Security | 20 |
+| Best Practices | 15 |
+| Marketplace | 15 |
+| Skill Security | 15 |
+| Code Quality | 10 |
+
+Plugins scoring **80+** get a "Verified by Scanner" badge in this list.
+
 ## Guides & Articles
 
 - [Codex Plugins, Visually Explained](https://adithyan.io/blog/codex-plugins-visual-explainer) - Visual walkthrough by @adithyan.
