@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-03-30",
-  "total": 23,
+  "last_updated": "2026-03-31",
+  "total": 25,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -38,6 +38,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/nyldn/claude-octopus/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Claude Code Skills",
+      "url": "https://github.com/alirezarezvani/claude-skills",
+      "owner": "alirezarezvani",
+      "repo": "claude-skills",
+      "description": "223 production-ready skills, 23 agents, and 298 Python tools across 9 domains — engineering, marketing, product, compliance, and more.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Codex Agenteam",
@@ -148,6 +158,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/Rothschildiuk/context-pack/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Jenkins CLI",
+      "url": "https://github.com/avivsinai/jenkins-cli",
+      "owner": "avivsinai",
+      "repo": "jenkins-cli",
+      "description": "GitHub CLI-style interface for Jenkins controllers with jobs, pipelines, runs, logs, artifacts, credentials, and nodes.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/avivsinai/jenkins-cli/main/.codex-plugin/plugin.json"
     },
     {
       "name": "KiCad Happy",
