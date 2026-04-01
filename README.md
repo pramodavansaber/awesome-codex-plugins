@@ -124,54 +124,35 @@ $plugin-creator
 
 Currently no self-serve marketplace submission. Plugins are distributed via local marketplaces (`~/.agents/plugins/marketplace.json`), repo marketplaces (`$REPO_ROOT/.agents/plugins/marketplace.json`), or GitHub repos by pointing a marketplace source at a repo. OpenAI has stated third-party marketplace submissions are coming soon.
 
-## Scan Your Plugin
+## Validate Before You Ship
 
-Before submitting a plugin, run the [codex-plugin-scanner](https://github.com/hashgraph-online/codex-plugin-scanner) to check for security issues and best practices. It scores your plugin from 0-100 and generates actionable findings.
+After scaffolding with `$plugin-creator`, use [codex-plugin-scanner](https://github.com/hashgraph-online/codex-plugin-scanner) as your quality gate before publishing, review, or distribution.
 
-### Quick Check
+### Local Preflight
 
 ```bash
-pip install codex-plugin-scanner
-codex-plugin-scanner ./my-plugin
+pipx run codex-plugin-scanner lint .
+codex-plugin-scanner verify .
 ```
 
-### CI Integration
-
-Add to your plugin's GitHub Actions as a PR gate:
+### PR Gate (GitHub Actions)
 
 ```yaml
-- uses: hashgraph-online/codex-plugin-scanner/action@v1.1.0
+- uses: hashgraph-online/codex-plugin-scanner/action@v1
   with:
     plugin_dir: "."
-    min_score: 70
     fail_on_severity: high
 ```
 
-### Pre-commit Hook
+### Submission Preflight
 
-Catch issues before they reach CI:
+Use scanner outputs as evidence for maintainers/reviewers:
 
-```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/hashgraph-online/codex-plugin-scanner
-    rev: v1.1.0
-    hooks:
-      - id: codex-plugin-scanner
-```
+- structural lint results
+- publish-readiness verification output
+- SARIF/findings for CI and code scanning
 
-### What It Checks
-
-| Category | Max Points |
-|----------|-----------|
-| Manifest Validation | 25 |
-| Security | 20 |
-| Best Practices | 15 |
-| Marketplace | 15 |
-| Skill Security | 15 |
-| Code Quality | 10 |
-
-Plugins scoring **80+** get a "Verified by Scanner" badge in this list.
+The score is best used as a quick trust signal and triage summary (not the only readiness signal).
 
 ## Guides & Articles
 
