@@ -22,6 +22,7 @@
 
 ## Contents
 
+- [Start Here](#start-here)
 - [Official Plugins](#official-plugins)
 - [Community Plugins](#community-plugins)
 - [Plugin Development](#plugin-development)
@@ -29,6 +30,21 @@
 - [Related Projects](#related-projects)
 
 ---
+
+## Start Here
+
+New plugin workflow:
+
+1. Create with `$plugin-creator`
+2. Validate with [`codex-plugin-scanner`](https://github.com/hashgraph-online/codex-plugin-scanner)
+3. Ship or submit with confidence
+
+Quick preflight:
+
+```bash
+pipx run codex-plugin-scanner lint .
+codex-plugin-scanner verify .
+```
 
 ## Official Plugins
 
