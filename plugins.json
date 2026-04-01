@@ -3,7 +3,7 @@
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
   "last_updated": "2026-04-01",
-  "total": 28,
+  "total": 29,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -28,6 +28,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/boshu2/agentops/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Blueprint",
+      "url": "https://github.com/JuliusBrussee/blueprint",
+      "owner": "JuliusBrussee",
+      "repo": "blueprint",
+      "description": "Specification-driven development pipeline that turns natural language into domain blueprints with testable acceptance criteria, generates parallel build plans, and implements them with automated validation and cross-model adversarial review.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/JuliusBrussee/blueprint/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Brooks Lint",
