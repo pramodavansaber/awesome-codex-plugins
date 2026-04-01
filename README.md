@@ -37,7 +37,8 @@ New plugin workflow:
 
 1. Create with `$plugin-creator`
 2. Validate with [`codex-plugin-scanner`](https://github.com/hashgraph-online/codex-plugin-scanner)
-3. Ship or submit with confidence
+3. Gate PRs with the [HOL scanner GitHub Action](https://github.com/hashgraph-online/hol-codex-plugin-scanner-action)
+4. Ship or submit with confidence
 
 Quick preflight:
 
@@ -154,7 +155,7 @@ pipx run codex-plugin-scanner verify .
 ### PR Gate (GitHub Actions)
 
 ```yaml
-- uses: hashgraph-online/codex-plugin-scanner/action@v1
+- uses: hashgraph-online/hol-codex-plugin-scanner-action@v1
   with:
     plugin_dir: "."
     fail_on_severity: high
