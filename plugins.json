@@ -20,6 +20,16 @@
       "install_url": "https://raw.githubusercontent.com/hashgraph-online/registry-broker-codex-plugin/main/.codex-plugin/plugin.json"
     },
     {
+      "name": "Blueprint",
+      "url": "https://github.com/JuliusBrussee/blueprint",
+      "owner": "JuliusBrussee",
+      "repo": "blueprint",
+      "description": "Specification-driven development pipeline that turns natural language into domain blueprints with testable acceptance criteria, generates parallel build plans, and implements them with automated validation and cross-model adversarial review.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/JuliusBrussee/blueprint/main/.codex-plugin/plugin.json"
+    },
+    {
       "name": "AgentOps",
       "url": "https://github.com/boshu2/agentops",
       "owner": "boshu2",
@@ -44,7 +54,7 @@
       "url": "https://github.com/hyhmrright/brooks-lint",
       "owner": "hyhmrright",
       "repo": "brooks-lint",
-      "description": "AI code reviews grounded in six classic engineering books — decay risk diagnostics with book citations, severity labels, and four analysis modes (PR review, architecture audit, tech debt, test quality).",
+      "description": "AI code reviews grounded in six classic engineering books \u2014 decay risk diagnostics with book citations, severity labels, and four analysis modes (PR review, architecture audit, tech debt, test quality).",
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/hyhmrright/brooks-lint/main/.codex-plugin/plugin.json"
@@ -54,7 +64,7 @@
       "url": "https://github.com/alirezarezvani/claude-skills",
       "owner": "alirezarezvani",
       "repo": "claude-skills",
-      "description": "223 production-ready skills, 23 agents, and 298 Python tools across 9 domains — engineering, marketing, product, compliance, and more.",
+      "description": "223 production-ready skills, 23 agents, and 298 Python tools across 9 domains \u2014 engineering, marketing, product, compliance, and more.",
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/.codex-plugin/plugin.json"
@@ -284,7 +294,7 @@
       "url": "https://github.com/talkstream/ru-text",
       "owner": "talkstream",
       "repo": "ru-text",
-      "description": "Russian text quality — ~1,040 rules for typography, info-style, editorial, UX writing, and business correspondence.",
+      "description": "Russian text quality \u2014 ~1,040 rules for typography, info-style, editorial, UX writing, and business correspondence.",
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/talkstream/ru-text/main/.codex-plugin/plugin.json"
