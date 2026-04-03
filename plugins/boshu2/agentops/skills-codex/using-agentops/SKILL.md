@@ -65,7 +65,7 @@ $release --check       # Readiness validation only (GO/NO-GO)
 $release --dry-run     # Preview without writing
 ```
 
-**Output:** Updated CHANGELOG.md, version bumps, git tag, `.agents/releases/`
+**Output:** Updated CHANGELOG.md, version bumps, git tag, `docs/releases/`
 
 ## Phase-to-Skill Mapping
 
@@ -96,7 +96,7 @@ These are the skills every user needs first. Everything else is available when y
 | `$research` | Deep codebase exploration |
 | `$council` | Multi-model consensus review + finding auto-extraction |
 | `$vibe` | Code validation (classification + suppression + domain checklists) |
-| `$rpi` | Full RPI lifecycle orchestrator (research → plan → implement → validate) |
+| `$rpi` | Full RPI lifecycle orchestrator (`$discovery` → `$crank` → `$validation`) |
 | `$implement` | Execute single issue |
 | `$retro --quick` | Quick-capture a single learning into the flywheel |
 | `$status` | Single-screen dashboard of current work and suggested next action |

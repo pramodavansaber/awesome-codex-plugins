@@ -4,11 +4,8 @@ description: 'Full RPI lifecycle orchestrator. Delegates to $discovery, $crank, 
 ---
 
 # $rpi — Full RPI Lifecycle Orchestrator
-
 > **Quick Ref:** One command, full lifecycle. `$discovery` → `$crank` → `$validation`. Thin wrapper that delegates to phase orchestrators.
-
 **YOU MUST EXECUTE THIS WORKFLOW. Do not just describe it.**
-
 **THREE-PHASE RULE + FULLY AUTONOMOUS.** Read `references/autonomous-execution.md` — it defines the mandatory 3-phase lifecycle, autonomous execution rules, anti-patterns, and phase completion logging. Unless `--interactive` is set, RPI runs hands-free. Do NOT stop after Phase 2. Do NOT ask the user anything between phases.
 
 ## Codex Lifecycle Guard
@@ -60,7 +57,7 @@ classify(goal) -> complexity, start_phase
 STEP 1  -- if start_phase <= discovery:
             $discovery <goal> [--interactive] --complexity=<level>
             BLOCKED? -> stop (manual intervention)
-            DONE?    -> read .agents/rpi/execution-packet.json and preserve its objective spine
+            DONE?    -> read the execution packet (latest alias or matching run archive) and preserve its objective spine
             Log: PHASE 1 COMPLETE ✓ (discovery) — proceeding to Phase 2
 
 STEP 2  -- if execution-packet has epic_id:
@@ -72,8 +69,7 @@ STEP 2  -- if execution-packet has epic_id:
             DONE? -> ao ratchet record implement 2>/dev/null || true
             Log: PHASE 2 COMPLETE ✓ (implementation) — proceeding to Phase 3
 
-STEP 3  -- if complexity != fast:
-            if execution-packet has epic_id:
+STEP 3  -- if execution-packet has epic_id:
               $validation <epic-id> --complexity=<level> [--strict-surfaces if --quality]
             else:
               $validation --complexity=<level> [--strict-surfaces if --quality]
@@ -108,7 +104,7 @@ STEP 4  -- report(verdicts)
 
 | Level | Criteria | Behavior |
 |-------|----------|----------|
-| `fast` | Goal <=30 chars, no complex/scope keywords | STEP 3 skipped |
+| `fast` | Goal <=30 chars, no complex/scope keywords | Full DAG. Gates use `--quick` throughout. |
 | `standard` | Goal 31-120 chars, or 1 scope keyword | Full DAG. Gates use `--quick` |
 | `full` | Complex-operation keyword, 2+ scope keywords, or >120 chars | Full DAG. Gates use full council |
 
@@ -137,7 +133,7 @@ rpi_state = {
 ## Gate Logic Detail
 
 **STEP 1 gate (discovery):**
-- `<promise>DONE</promise>`: read `.agents/rpi/execution-packet.json`, preserve `objective`, and use `epic_id` only when it is present. Otherwise pass the execution packet itself to STEP 2.
+- `<promise>DONE</promise>`: read the execution packet (latest alias or matching run archive), preserve `objective`, and use `epic_id` only when it is present. Otherwise pass the execution packet itself to STEP 2.
 - `<promise>BLOCKED</promise>`: stop — discovery handles its own retries (max 3 pre-mortem attempts)
 
 **STEP 2 gate (implementation, max 3 attempts):**
@@ -166,7 +162,7 @@ rpi_state = {
 | `--spawn-next` | off | Surface follow-up work after completion |
 | `--test-first` | on | Strict-quality (passed to `$crank`) |
 | `--no-test-first` | off | Opt out of strict-quality |
-| `--fast-path` | auto | Force fast complexity (skip STEP 3) |
+| `--fast-path` | auto | Force fast complexity (uses quick inline gates, still runs full lifecycle) |
 | `--deep` | auto | Force full complexity |
 | `--quality` | off | Pass `--strict-surfaces` to `$validation`, making all 4 surface failures blocking |
 | `--dry-run` | off | Report without mutating queue |
@@ -181,11 +177,10 @@ $rpi --from=implementation ag-23k                      # enter at STEP 2
 $rpi --from=validation                                 # enter at STEP 3
 $rpi --loop --max-cycles=3 "add auth"                 # iterate-on-fail loop
 $rpi --deep "refactor payment module"                  # force full council
-$rpi --fast-path "fix typo in readme"                  # skip STEP 3
+$rpi --fast-path "fix typo in readme"                  # force fast inline gates
 ```
 
 ## Complexity-Scaled Council Gates
-
 ### Pre-mortem (STEP 5 in discovery)
 complexity == "fast": inline review, no spawning (--quick) | complexity == "standard": inline fast default (--quick) | complexity == "full": full council, 2-judge minimum. Retry gate: max 3 total attempts.
 
@@ -197,16 +192,12 @@ complexity == "fast": inline review, no spawning (--quick) | complexity == "stan
 
 ## Phase Data Contracts
 
-All transitions use filesystem artifacts (no in-memory coupling). The execution packet (`.agents/rpi/execution-packet.json`) carries `contract_surfaces` (repo execution profile), `done_criteria`, and queue claim/finalize metadata between phases. Sub-skills include `$plan`, `$vibe`, `$post-mortem`, and `$pre-mortem`. For detailed contract schemas, read `references/phase-data-contracts.md`.
+All transitions use filesystem artifacts (no in-memory coupling). The execution packet (`.agents/rpi/execution-packet.json` as the latest alias, plus `.agents/rpi/runs/<run-id>/execution-packet.json` as the per-run archive) carries `contract_surfaces` (repo execution profile), `done_criteria`, and queue claim/finalize metadata between phases. Sub-skills include `$plan`, `$vibe`, `$post-mortem`, and `$pre-mortem`. For detailed contract schemas, read `references/phase-data-contracts.md`.
 
 ## Examples
-
 Read `references/examples.md` for full lifecycle, resume, and interactive examples.
-
 ## Troubleshooting
-
 Read `references/troubleshooting.md` for common problems and solutions.
-
 **See also:** [discovery](../discovery/SKILL.md), [crank](../crank/SKILL.md), [validation](../validation/SKILL.md)
 
 ## Reference Documents

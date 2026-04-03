@@ -209,6 +209,18 @@
       "category": "Tools & Integrations"
     },
     {
+      "name": "codex-seo",
+      "source": {
+        "source": "local",
+        "path": "./plugins/BestLemoon/codex-seo"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations"
+    },
+    {
       "name": "context-pack",
       "source": {
         "source": "local",
@@ -341,6 +353,30 @@
       "category": "Tools & Integrations"
     },
     {
+      "name": "remotion",
+      "source": {
+        "source": "local",
+        "path": "./plugins/tim-osterhus/codex-remotion-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations"
+    },
+    {
+      "name": "n8n-mcp-synta-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/Synta-ai/n8n-mcp-codex-plugin-synta"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations"
+    },
+    {
       "name": "task-scheduler",
       "source": {
         "source": "local",
@@ -357,6 +393,18 @@
       "source": {
         "source": "local",
         "path": "./plugins/henu-wang/tokrepo-codex-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations"
+    },
+    {
+      "name": "upwork-autopilot",
+      "source": {
+        "source": "local",
+        "path": "./plugins/klajdikkolaj/upwork-autopilot"
       },
       "policy": {
         "installation": "AVAILABLE",
