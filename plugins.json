@@ -3,7 +3,7 @@
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
   "last_updated": "2026-04-03",
-  "total": 31,
+  "total": 32,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -288,6 +288,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/talkstream/ru-text/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Synta MCP",
+      "url": "https://github.com/Synta-ai/n8n-mcp-codex-plugin-synta",
+      "owner": "Synta-ai",
+      "repo": "n8n-mcp-codex-plugin-synta",
+      "description": "Build, edit, validate, and self-heal n8n workflows with Synta MCP tools and Codex-ready workflow guidance.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/Synta-ai/n8n-mcp-codex-plugin-synta/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Task Scheduler",
