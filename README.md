@@ -47,6 +47,8 @@ pipx run codex-plugin-scanner lint .
 pipx run codex-plugin-scanner verify .
 ```
 
+This repo also publishes a real Codex repo marketplace at `.agents/plugins/marketplace.json`. The generated marketplace points at mirrored installable plugin bundles under `./plugins/`, so a local clone of this repository can act as a curated plugin source in Codex exactly the way the OpenAI docs describe.
+
 ## Official Plugins
 
 <details>
@@ -144,6 +146,8 @@ $plugin-creator
 ### Publishing
 
 Currently no self-serve marketplace submission. Plugins are distributed via local marketplaces (`~/.agents/plugins/marketplace.json`), repo marketplaces (`$REPO_ROOT/.agents/plugins/marketplace.json`), or GitHub repos by pointing a marketplace source at a repo. OpenAI has stated third-party marketplace submissions are coming soon.
+
+For this curated list, the machine-readable source of truth is the generated repo marketplace at `.agents/plugins/marketplace.json`. We keep the README for humans and `plugins.json` as a compatibility export for existing automation.
 
 ## Validate Before You Ship
 

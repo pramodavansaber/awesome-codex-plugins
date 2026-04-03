@@ -1,88 +1,252 @@
 #!/usr/bin/env python3
-"""Regenerate plugins.json from the README.md Community Plugins section.
+"""Regenerate compatibility metadata and the curated Codex marketplace from README.
 
 Usage:
     python3 scripts/generate_plugins_json.py
 
-This should be run after any change to the plugin list in README.md.
+This script keeps three artifacts aligned:
+
+- plugins.json compatibility output for legacy tooling
+- .agents/plugins/marketplace.json for Codex repo marketplace installs
+- mirrored installable plugin bundles under plugins/<owner>/<repo>/
 """
+
+from __future__ import annotations
+
 import datetime
+import io
 import json
 import re
-from pathlib import Path
+import urllib.request
+import zipfile
+from pathlib import Path, PurePosixPath
 
 README = Path(__file__).parent.parent / "README.md"
 OUTPUT = Path(__file__).parent.parent / "plugins.json"
+MARKETPLACE_OUTPUT = Path(__file__).parent.parent / ".agents" / "plugins" / "marketplace.json"
+PLUGINS_ROOT = Path(__file__).parent.parent / "plugins"
+REQUEST_TIMEOUT_SECONDS = 45
+USER_AGENT = "awesome-codex-plugins-generator"
+OPTIONAL_PLUGIN_FILES = (
+    "README.md",
+    "SECURITY.md",
+    "LICENSE",
+    "LICENSE.md",
+    "LICENSE.txt",
+    "package.json",
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock",
+    ".codexignore",
+  )
 
 
-def parse_plugins(readme_path: Path) -> list[dict]:
+def normalize_relative_path(value: str) -> str:
+    return value.replace("\\", "/").lstrip("./")
+
+
+def parse_plugins(readme_path: Path) -> list[dict[str, str]]:
     lines = readme_path.read_text(encoding="utf-8").splitlines()
 
     start = None
     end = None
-    for i, line in enumerate(lines):
+    for index, line in enumerate(lines):
         if line.strip() == "## Community Plugins":
-            start = i + 1
-        if start and line.strip().startswith("## ") and line.strip() != "## Community Plugins":
-            end = i
+            start = index + 1
+        if start is not None and line.strip().startswith("## ") and line.strip() != "## Community Plugins":
+            end = index
             break
 
-    if end is None:
-        end = len(lines)
     if start is None:
         raise ValueError("Could not find Community Plugins section")
+    if end is None:
+        end = len(lines)
 
     section = lines[start:end]
-    plugins = []
+    plugins: list[dict[str, str]] = []
     current_category = "Uncategorized"
-    seen = set()
+    seen: set[str] = set()
 
     for line in section:
-        cat_match = re.match(r"^### (.+)", line.strip())
-        if cat_match:
-            current_category = cat_match.group(1)
+        category_match = re.match(r"^### (.+)", line.strip())
+        if category_match:
+            current_category = category_match.group(1)
             continue
 
-        m = re.match(
+        plugin_match = re.match(
             r"^- \[([^\]]+)\]\((https://github\.com/([^/]+)/([^)#]+?))(?:#readme)?\)\s*[-–]\s*(.+)",
             line.strip(),
         )
-        if m:
-            owner, repo = m.group(3), m.group(4)
-            key = f"{owner}/{repo}"
-            if key in seen:
-                continue
-            seen.add(key)
-            # TODO: Detect default branch via GitHub API; some repos use 'master' or other names
-            plugins.append(
-                {
-                    "name": m.group(1),
-                    "url": m.group(2),
-                    "owner": owner,
-                    "repo": repo,
-                    "description": m.group(5).strip(),
-                    "category": current_category,
-                    "source": "awesome-codex-plugins",
-                    "install_url": f"https://raw.githubusercontent.com/{owner}/{repo}/main/.codex-plugin/plugin.json",
-                }
-            )
+        if not plugin_match:
+            continue
+
+        owner, repo = plugin_match.group(3), plugin_match.group(4)
+        repo = repo.removesuffix(".git")
+        key = f"{owner}/{repo}"
+        if key in seen:
+            continue
+        seen.add(key)
+        plugins.append(
+            {
+                "name": plugin_match.group(1),
+                "url": plugin_match.group(2),
+                "owner": owner,
+                "repo": repo,
+                "description": plugin_match.group(5).strip(),
+                "category": current_category,
+                "source": "awesome-codex-plugins",
+                "install_url": f"https://raw.githubusercontent.com/{owner}/{repo}/main/.codex-plugin/plugin.json",
+            }
+        )
 
     return plugins
 
 
-def main():
+def fetch_repo_archive(owner: str, repo: str) -> zipfile.ZipFile:
+    request = urllib.request.Request(
+        f"https://github.com/{owner}/{repo}/archive/HEAD.zip",
+        headers={"User-Agent": USER_AGENT},
+    )
+    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+        return zipfile.ZipFile(io.BytesIO(response.read()))
+
+
+def resolve_plugin_root(names: set[str]) -> PurePosixPath:
+    for name in sorted(names):
+        if name.endswith("/.codex-plugin/plugin.json"):
+            return PurePosixPath(name).parent.parent
+    raise ValueError("Archive does not contain .codex-plugin/plugin.json")
+
+
+def load_manifest(archive: zipfile.ZipFile, plugin_root: PurePosixPath) -> dict[str, object]:
+    manifest_name = plugin_root.joinpath(".codex-plugin", "plugin.json").as_posix()
+    return json.loads(archive.read(manifest_name).decode("utf-8"))
+
+
+def add_recursive_selection(
+    selected: set[str],
+    all_names: set[str],
+    plugin_root: PurePosixPath,
+    relative_path: str,
+) -> None:
+    normalized = normalize_relative_path(relative_path)
+    if not normalized:
+        return
+    archive_prefix = plugin_root.joinpath(PurePosixPath(normalized)).as_posix()
+    if archive_prefix in all_names:
+        selected.add(normalized)
+    prefix_with_slash = f"{archive_prefix}/"
+    for name in all_names:
+        if name.startswith(prefix_with_slash):
+            relative_name = PurePosixPath(name).relative_to(plugin_root).as_posix()
+            selected.add(relative_name)
+
+
+def collect_selected_paths(
+    manifest: dict[str, object],
+    all_names: set[str],
+    plugin_root: PurePosixPath,
+) -> set[str]:
+    selected = {".codex-plugin/plugin.json"}
+
+    for optional_name in OPTIONAL_PLUGIN_FILES:
+        candidate = plugin_root.joinpath(optional_name).as_posix()
+        if candidate in all_names:
+            selected.add(optional_name)
+
+    for key in ("skills", "mcpServers", "apps", "app", "appConfig"):
+        value = manifest.get(key)
+        if isinstance(value, str):
+            add_recursive_selection(selected, all_names, plugin_root, value)
+
+    interface = manifest.get("interface")
+    if isinstance(interface, dict):
+        for key in ("composerIcon", "logo"):
+            value = interface.get(key)
+            if isinstance(value, str):
+                add_recursive_selection(selected, all_names, plugin_root, value)
+        screenshots = interface.get("screenshots")
+        if isinstance(screenshots, list):
+            for screenshot in screenshots:
+                if isinstance(screenshot, str):
+                    add_recursive_selection(selected, all_names, plugin_root, screenshot)
+
+    return selected
+
+
+def mirror_plugin_bundle(plugin: dict[str, str]) -> tuple[dict[str, object], str]:
+    archive = fetch_repo_archive(plugin["owner"], plugin["repo"])
+    names = {name for name in archive.namelist() if not name.endswith("/")}
+    plugin_root = resolve_plugin_root(names)
+    manifest = load_manifest(archive, plugin_root)
+    selected_paths = collect_selected_paths(manifest, names, plugin_root)
+
+    destination_root = PLUGINS_ROOT / plugin["owner"] / plugin["repo"]
+    destination_root.mkdir(parents=True, exist_ok=True)
+
+    for relative_path in sorted(selected_paths):
+        archive_name = plugin_root.joinpath(PurePosixPath(relative_path)).as_posix()
+        destination_path = destination_root / PurePosixPath(relative_path)
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        destination_path.write_bytes(archive.read(archive_name))
+
+    manifest_name = str(manifest.get("name") or "").strip() or plugin["repo"]
+    return manifest, f"./plugins/{plugin['owner']}/{plugin['repo']}"
+
+
+def build_marketplace_entry(
+    plugin: dict[str, str],
+    manifest: dict[str, object],
+    marketplace_path: str,
+) -> dict[str, object]:
+    manifest_name = str(manifest.get("name") or "").strip() or plugin["repo"]
+    return {
+        "name": manifest_name,
+        "source": {
+            "source": "local",
+            "path": marketplace_path,
+        },
+        "policy": {
+            "installation": "AVAILABLE",
+            "authentication": "ON_INSTALL",
+        },
+        "category": plugin["category"],
+    }
+
+
+def write_json(path: Path, data: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def main() -> None:
     plugins = parse_plugins(README)
-    data = {
+    mirrored_entries: list[dict[str, object]] = []
+    for plugin in plugins:
+        manifest, marketplace_path = mirror_plugin_bundle(plugin)
+        mirrored_entries.append(build_marketplace_entry(plugin, manifest, marketplace_path))
+
+    marketplace = {
+        "name": "awesome-codex-plugins",
+        "interface": {
+            "displayName": "Awesome Codex Plugins",
+        },
+        "plugins": mirrored_entries,
+    }
+    plugins_json = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "name": "awesome-codex-plugins",
         "version": "1.0.0",
         "last_updated": datetime.date.today().isoformat(),
         "total": len(plugins),
-        "categories": sorted({p["category"] for p in plugins}),
+        "categories": sorted({plugin["category"] for plugin in plugins}),
         "plugins": plugins,
     }
-    OUTPUT.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    write_json(MARKETPLACE_OUTPUT, marketplace)
+    write_json(OUTPUT, plugins_json)
     print(f"Wrote {len(plugins)} plugins to {OUTPUT}")
+    print(f"Wrote curated marketplace to {MARKETPLACE_OUTPUT}")
 
 
 if __name__ == "__main__":
