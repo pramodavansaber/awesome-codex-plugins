@@ -314,7 +314,7 @@ If the script or inline download fails (exit code 1), **tell the user and provid
 
 Example message to the user:
 > I couldn't download the datasheet for ICE40UP5K-SG48I automatically — Lattice's site requires browser authentication. Here's the direct link:
-> https://www.latticesemi.com/-/media/LatticeSemi/Documents/DataSheets/iCE/FPGA-DS-02008-1-9-iCE40-Ultra-Plus-Family-Data-Sheet.ashx
+> https://www.latticesemi.com/-/media/LatticeSemi/Documents/DataSheets/iCE/iCE40-UltraPlus-Family-Data-Sheet.ashx
 >
 > You can open it in your browser and save it locally, then I can read and analyze it.
 
