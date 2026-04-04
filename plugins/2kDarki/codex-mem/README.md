@@ -347,7 +347,7 @@ See the [LICENSE](LICENSE) file for full details.
 
 ## Support
 
-- **Documentation**: [docs/](docs/)
+- **Documentation**: [docs](https://github.com/2kDarki/codex-mem/tree/main/docs)
 - **Issues**: [GitHub Issues](https://github.com/thedotmack/claude-mem/issues)
 - **Repository**: [github.com/thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)
 - **Official X Account**: [@Claude_Memory](https://x.com/Claude_Memory)
