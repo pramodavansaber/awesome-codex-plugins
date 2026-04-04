@@ -470,32 +470,51 @@ def analyze_signal_paths(ctx: AnalysisContext) -> dict:
     Each detector takes an AnalysisContext and returns its detection results.
     """
     from signal_detectors import (
-        detect_addressable_leds,
-        detect_bms_systems,
         detect_bridge_circuits,
-        detect_buzzer_speakers,
         detect_crystal_circuits,
         detect_current_sense,
         detect_decoupling,
         detect_design_observations,
-        detect_ethernet_interfaces,
-        detect_hdmi_dvi_interfaces,
         detect_integrated_ldos,
-        detect_isolation_barriers,
-        detect_key_matrices,
         detect_lc_filters,
         detect_led_drivers,
-        detect_memory_interfaces,
         detect_opamp_circuits,
         detect_power_regulators,
         detect_protection_devices,
         detect_rc_filters,
-        detect_rf_chains,
-        detect_rf_matching,
         detect_transistor_circuits,
         detect_voltage_dividers,
         postfilter_vd_and_dedup,
         _merge_series_dividers,
+    )
+    from domain_detectors import (
+        audit_esd_protection,
+        audit_led_circuits,
+        detect_adc_circuits,
+        detect_addressable_leds,
+        detect_audio_circuits,
+        detect_battery_chargers,
+        detect_bms_systems,
+        detect_buzzer_speakers,
+        detect_clock_distribution,
+        detect_debug_interfaces,
+        detect_display_interfaces,
+        detect_ethernet_interfaces,
+        detect_hdmi_dvi_interfaces,
+        detect_isolation_barriers,
+        detect_key_matrices,
+        detect_led_driver_ics,
+        detect_level_shifters,
+        detect_memory_interfaces,
+        detect_motor_drivers,
+        detect_power_path,
+        detect_reset_supervisors,
+        detect_rf_chains,
+        detect_rf_matching,
+        detect_rtc_circuits,
+        detect_sensor_interfaces,
+        detect_thermocouple_rtd,
+        validate_power_sequencing,
     )
 
     nets = ctx.nets
@@ -536,7 +555,25 @@ def analyze_signal_paths(ctx: AnalysisContext) -> dict:
     rf_chains = detect_rf_chains(ctx)
     rf_matching = detect_rf_matching(ctx)
     bms_systems = detect_bms_systems(ctx)
+    battery_chargers = detect_battery_chargers(ctx)
+    motor_drivers = detect_motor_drivers(ctx)
     addressable_led_chains = detect_addressable_leds(ctx)
+    debug_interfaces = detect_debug_interfaces(ctx)
+    power_path = detect_power_path(ctx)
+    esd_coverage_audit = audit_esd_protection(ctx, protection_devices)
+    adc_circuits = detect_adc_circuits(ctx, rc_filters, protection_devices)
+    reset_supervisors = detect_reset_supervisors(ctx)
+    clock_distribution = detect_clock_distribution(ctx, crystal_circuits)
+    display_interfaces = detect_display_interfaces(ctx)
+    sensor_interfaces = detect_sensor_interfaces(ctx)
+    level_shifters = detect_level_shifters(ctx)
+    audio_circuits = detect_audio_circuits(ctx)
+    led_driver_ics = detect_led_driver_ics(ctx)
+    rtc_circuits = detect_rtc_circuits(ctx, crystal_circuits)
+    led_audit = audit_led_circuits(ctx, transistor_circuits)
+    thermocouple_rtd = detect_thermocouple_rtd(ctx)
+    power_sequencing_validation = validate_power_sequencing(
+        ctx, power_regulators, power_path, reset_supervisors)
 
     # Remove R/C components that appear in crystal circuits from RC filter
     # results — prevents misclassifying crystal feedback resistors + load caps
@@ -608,7 +645,24 @@ def analyze_signal_paths(ctx: AnalysisContext) -> dict:
         "rf_chains": rf_chains,
         "rf_matching": rf_matching,
         "bms_systems": bms_systems,
+        "battery_chargers": battery_chargers,
+        "motor_drivers": motor_drivers,
         "addressable_led_chains": addressable_led_chains,
+        "debug_interfaces": debug_interfaces,
+        "power_path": power_path,
+        "esd_coverage_audit": esd_coverage_audit,
+        "adc_circuits": adc_circuits,
+        "reset_supervisors": reset_supervisors,
+        "clock_distribution": clock_distribution,
+        "display_interfaces": display_interfaces,
+        "sensor_interfaces": sensor_interfaces,
+        "level_shifters": level_shifters,
+        "audio_circuits": audio_circuits,
+        "led_driver_ics": led_driver_ics,
+        "rtc_circuits": rtc_circuits,
+        "led_audit": led_audit,
+        "thermocouple_rtd": thermocouple_rtd,
+        "power_sequencing_validation": power_sequencing_validation,
     }
 
     results["design_observations"] = detect_design_observations(ctx, results)
@@ -4759,7 +4813,8 @@ def analyze_pdn_impedance(ctx: AnalysisContext, signal_analysis: dict | None = N
             comp = comp_lookup.get(p["component"])
             if not comp or comp["type"] != "capacitor":
                 continue
-            cap_val = parse_value(comp.get("value", ""))
+            # KH-196: Use pre-computed parsed_values (has component_type context)
+            cap_val = ctx.parsed_values.get(comp["reference"])
             if not cap_val or cap_val <= 0:
                 continue
             # Check other pin goes to ground
@@ -6354,31 +6409,148 @@ def analyze_usb_compliance(ctx: AnalysisContext,
 
         # --- CC1/CC2 pull-down check (Type-C only) ---
         if conn["is_type_c"]:
-            cc1_ok = False
-            cc2_ok = False
+            _PD_CONTROLLER_KEYWORDS = (
+                "fusb302", "stusb4500", "cypd3177", "husb238",
+                "tps65987", "tps65988", "ccg3", "ccg6",
+                "max77958", "max20342",
+            )
+
+            cc1_net = None
+            cc2_net = None
+            cc1_resistor = None  # {ref, ohms, to_ground, to_power}
+            cc2_resistor = None
+            pd_controller = None
+
             for pname, net_name in conn_pin_nets.items():
                 if "CC1" not in pname and "CC2" not in pname:
                     continue
                 is_cc1 = "CC1" in pname
-                # Check for 5.1k pull-down to GND on this net
-                if net_name in nets:
+                if is_cc1:
+                    cc1_net = net_name
+                else:
+                    cc2_net = net_name
+
+                if net_name not in nets:
+                    continue
+
+                # Check for PD controller on this CC net
+                if not pd_controller:
                     for p in nets[net_name]["pins"]:
-                        rc = comp_lookup.get(p["component"])
-                        if not rc or rc["type"] != "resistor":
+                        ic = comp_lookup.get(p["component"])
+                        if not ic or ic["type"] != "ic":
                             continue
-                        r_val = parse_value(rc.get("value", ""))
-                        if r_val and 4800 <= r_val <= 5600:
-                            # Check other side goes to GND
-                            rn1, _ = pin_net.get((rc["reference"], "1"), (None, None))
-                            rn2, _ = pin_net.get((rc["reference"], "2"), (None, None))
-                            other = rn2 if rn1 == net_name else rn1
-                            if is_ground(other):
-                                if is_cc1:
-                                    cc1_ok = True
-                                else:
-                                    cc2_ok = True
-            conn_checks["checks"]["cc1_pulldown_5k1"] = "pass" if cc1_ok else "fail"
-            conn_checks["checks"]["cc2_pulldown_5k1"] = "pass" if cc2_ok else "fail"
+                        ic_combined = (ic.get("value", "") + " " + ic.get("lib_id", "")).lower()
+                        if any(kw in ic_combined for kw in _PD_CONTROLLER_KEYWORDS):
+                            pd_controller = p["component"]
+                            break
+
+                # Check for resistors on CC net
+                for p in nets[net_name]["pins"]:
+                    rc = comp_lookup.get(p["component"])
+                    if not rc or rc["type"] != "resistor":
+                        continue
+                    r_val = parse_value(rc.get("value", ""))
+                    if not r_val:
+                        continue
+                    rn1, _ = pin_net.get((rc["reference"], "1"), (None, None))
+                    rn2, _ = pin_net.get((rc["reference"], "2"), (None, None))
+                    other = rn2 if rn1 == net_name else rn1
+                    r_info = {
+                        "ref": rc["reference"],
+                        "ohms": r_val,
+                        "to_ground": is_ground(other),
+                        "to_power": ctx.is_power_net(other) if not is_ground(other) else False,
+                    }
+                    if is_cc1:
+                        cc1_resistor = r_info
+                    else:
+                        cc2_resistor = r_info
+
+            # Determine role and status
+            issues: list[str] = []
+            if pd_controller:
+                role = "pd_controlled"
+            else:
+                # Check for sink (5.1k pull-down) vs source (56k pull-up)
+                cc1_sink = (cc1_resistor and 4800 <= cc1_resistor["ohms"] <= 5600
+                            and cc1_resistor["to_ground"])
+                cc2_sink = (cc2_resistor and 4800 <= cc2_resistor["ohms"] <= 5600
+                            and cc2_resistor["to_ground"])
+                cc1_source = (cc1_resistor and 50000 <= cc1_resistor["ohms"] <= 62000
+                              and cc1_resistor["to_power"])
+                cc2_source = (cc2_resistor and 50000 <= cc2_resistor["ohms"] <= 62000
+                              and cc2_resistor["to_power"])
+
+                if cc1_source or cc2_source:
+                    role = "source"
+                elif cc1_sink or cc2_sink:
+                    role = "sink"
+                else:
+                    role = "unknown"
+
+                # Validate
+                if role == "sink":
+                    if not cc1_sink:
+                        issues.append("missing_cc1_resistor")
+                    if not cc2_sink:
+                        issues.append("missing_cc2_resistor")
+                    if cc1_sink and cc2_sink:
+                        if abs(cc1_resistor["ohms"] - cc2_resistor["ohms"]) > 200:
+                            issues.append("asymmetric_cc")
+                elif role == "source":
+                    if not cc1_source:
+                        issues.append("missing_cc1_resistor")
+                    if not cc2_source:
+                        issues.append("missing_cc2_resistor")
+                    if cc1_source and cc2_source:
+                        if abs(cc1_resistor["ohms"] - cc2_resistor["ohms"]) > 5000:
+                            issues.append("asymmetric_cc")
+                elif role == "unknown":
+                    # Check for partial/wrong values
+                    if cc1_resistor and not cc2_resistor:
+                        issues.append("missing_cc2_resistor")
+                        issues.append("asymmetric_cc")
+                    elif cc2_resistor and not cc1_resistor:
+                        issues.append("missing_cc1_resistor")
+                        issues.append("asymmetric_cc")
+                    elif not cc1_resistor and not cc2_resistor:
+                        issues.append("missing_cc1_resistor")
+                        issues.append("missing_cc2_resistor")
+                    if cc1_resistor and not (4800 <= cc1_resistor["ohms"] <= 5600 or
+                                             50000 <= cc1_resistor["ohms"] <= 62000):
+                        issues.append("wrong_cc_value")
+                    if cc2_resistor and not (4800 <= cc2_resistor["ohms"] <= 5600 or
+                                             50000 <= cc2_resistor["ohms"] <= 62000):
+                        issues.append("wrong_cc_value")
+
+            cc_status = "pass" if not issues else "fail"
+            cc_detail: dict = {
+                "cc1_net": cc1_net,
+                "cc2_net": cc2_net,
+                "cc1_resistor": cc1_resistor,
+                "cc2_resistor": cc2_resistor,
+                "role": role,
+                "pd_controller": pd_controller,
+                "status": cc_status,
+                "issues": issues,
+            }
+            conn_checks["usb_c_cc_status"] = cc_detail
+
+            # Legacy check keys for summary compatibility
+            if pd_controller:
+                conn_checks["checks"]["cc1_pulldown_5k1"] = "pass"
+                conn_checks["checks"]["cc2_pulldown_5k1"] = "pass"
+            elif role == "source":
+                # Source uses pull-ups, not pull-downs — not a failure
+                conn_checks["checks"]["cc1_pulldown_5k1"] = "info"
+                conn_checks["checks"]["cc2_pulldown_5k1"] = "info"
+            else:
+                cc1_ok = (cc1_resistor and 4800 <= cc1_resistor["ohms"] <= 5600
+                          and cc1_resistor["to_ground"])
+                cc2_ok = (cc2_resistor and 4800 <= cc2_resistor["ohms"] <= 5600
+                          and cc2_resistor["to_ground"])
+                conn_checks["checks"]["cc1_pulldown_5k1"] = "pass" if cc1_ok else "fail"
+                conn_checks["checks"]["cc2_pulldown_5k1"] = "pass" if cc2_ok else "fail"
 
         # --- D+/D- series resistors ---
         dp_net = None
@@ -6512,7 +6684,8 @@ def analyze_inrush_current(ctx: AnalysisContext,
             comp = comp_lookup.get(p["component"])
             if not comp or comp["type"] != "capacitor":
                 continue
-            cap_val = parse_value(comp.get("value", ""))
+            # KH-196: Use pre-computed parsed_values (has component_type context)
+            cap_val = ctx.parsed_values.get(comp["reference"])
             if not cap_val or cap_val <= 0:
                 continue
             # Check other pin goes to ground
@@ -6791,8 +6964,31 @@ def analyze_schematic(path: str) -> dict:
     # Statistics
     stats = compute_statistics(all_components, nets, bom, all_wires, all_no_connects)
 
+    # Confidence map for downstream consumers (format-report.py, top-risk)
+    confidence_map = {
+        # Deterministic — structural/netlist checks
+        "erc_warnings": "deterministic",
+        "annotation_issues": "deterministic",
+        "label_shape_warnings": "deterministic",
+        "pwr_flag_warnings": "deterministic",
+        "connectivity_issues": "deterministic",
+        "pin_coverage_warnings": "deterministic",
+        "instance_consistency_warnings": "deterministic",
+        "hierarchical_labels": "deterministic",
+        # Heuristic — value parsing, net name inference
+        "footprint_filter_warnings": "heuristic",
+        "generic_symbol_warnings": "heuristic",
+        "voltage_derating": "heuristic",
+        "sleep_current_audit": "heuristic",
+        "property_issues": "heuristic",
+        "wire_geometry": "heuristic",
+        # Datasheet-backed — when Vref comes from lookup table
+        "signal_analysis.power_regulators": "heuristic",  # mixed; per-item vref_source overrides
+    }
+
     result = {
         "analyzer_type": "schematic",
+        "confidence_map": confidence_map,
         "file": str(path),
         "kicad_version": generator_version,
         "file_version": file_version,
@@ -6864,6 +7060,32 @@ def analyze_schematic(path: str) -> dict:
     if len(sheets_parsed) > 1:
         result["sheets"] = sheets_parsed
 
+    # --- Missing information section ---
+    # Aggregates data gaps so downstream consumers can separate
+    # "missing data" from "actual design issues"
+    missing_info = {}
+    # Missing MPNs and footprints (from statistics)
+    missing_mpn = stats.get("missing_mpn", [])
+    if missing_mpn:
+        missing_info["missing_mpn"] = missing_mpn
+    missing_fp = stats.get("missing_footprint", [])
+    if missing_fp:
+        missing_info["missing_footprint"] = missing_fp
+    # Components with MPN but no datasheet URL
+    missing_ds = [c["reference"] for c in all_components
+                  if c.get("mpn") and not c.get("datasheet")
+                  and c["type"] not in ("power_symbol", "power_flag", "flag")]
+    if missing_ds:
+        missing_info["missing_datasheet"] = sorted(missing_ds)
+    # Regulators with heuristic Vref (no datasheet lookup available)
+    sig = signal_analysis or {}
+    heuristic_vref = [r["ref"] for r in sig.get("power_regulators", [])
+                      if r.get("vref_source") == "heuristic"]
+    if heuristic_vref:
+        missing_info["heuristic_vref"] = heuristic_vref
+    if missing_info:
+        result["missing_info"] = missing_info
+
     return result
 
 
@@ -6905,6 +7127,8 @@ def _get_schema():
             "rf_chains": "[{components_in_chain}]",
             "rf_matching": "[{antenna, antenna_value, topology: pi_match|L_match|T_match|matching_network, components: [{ref, type, value}], target_ic, target_value}]",
             "bms_systems": "[{ic_ref, cell_count}]",
+            "battery_chargers": "[{charger_reference, charger_type, charge_current: {prog_resistor, programmed_current_mA, formula}, cell_protection}]",
+            "motor_drivers": "[{driver_reference, driver_type: dc_brushed_h_bridge|stepper|brushless_3phase|gate_driver, motor_outputs, bootstrap_caps, freewheeling_diodes, external_fets}]",
         },
         "design_analysis": {
             "buses": "{i2c|spi|uart|can|sdio|differential_pairs: [bus_instances]}",
@@ -6925,6 +7149,8 @@ def main():
     parser.add_argument("--compact", action="store_true", help="Compact JSON output")
     parser.add_argument("--schema", action="store_true",
                         help="Print JSON output schema and exit")
+    parser.add_argument("--config", default=None,
+                        help="Path to .kicad-happy.json project config file")
     args = parser.parse_args()
 
     if args.schema:
@@ -6934,7 +7160,23 @@ def main():
     if not args.schematic:
         parser.error("the following arguments are required: schematic")
 
+    # Load project config (for project settings — suppressions applied to
+    # EMC/thermal findings, not schematic warnings which lack rule_ids)
+    try:
+        from project_config import load_config_from_path, load_config
+        if args.config:
+            config = load_config_from_path(args.config)
+        else:
+            config = load_config(str(Path(args.schematic).parent))
+    except ImportError:
+        config = {"version": 1, "project": {}, "suppressions": []}
+
     result = analyze_schematic(args.schematic)
+
+    # Attach project config summary to output for downstream consumers
+    project = config.get("project", {})
+    if project:
+        result["project_config"] = project
 
     indent = None if args.compact else 2
     output = json.dumps(result, indent=indent, default=str)
