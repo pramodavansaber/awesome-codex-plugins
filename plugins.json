@@ -3,7 +3,7 @@
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
   "last_updated": "2026-04-06",
-  "total": 39,
+  "total": 40,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -348,6 +348,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/talkstream/ru-text/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "sitemd",
+      "url": "https://github.com/sitemd-cc/sitemd",
+      "owner": "sitemd-cc",
+      "repo": "sitemd",
+      "description": "Build websites from Markdown via MCP — 22 tools for creating pages, generating content, validating, running SEO audits, configuring settings, and deploying static sites to Cloudflare Pages.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/sitemd-cc/sitemd/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Synta MCP",
