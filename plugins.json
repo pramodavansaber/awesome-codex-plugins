@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-04-05",
-  "total": 38,
+  "last_updated": "2026-04-06",
+  "total": 39,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -48,6 +48,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/hyhmrright/brooks-lint/main/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Claude Code for Codex",
+      "url": "https://github.com/sendbird/cc-plugin-codex",
+      "owner": "sendbird",
+      "repo": "cc-plugin-codex",
+      "description": "Reverse of OpenAI's official Claude-hosted plugin: use Claude Code from Codex for reviews, rescue tasks, tracked background jobs, and hook-powered review gates.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/sendbird/cc-plugin-codex/main/.codex-plugin/plugin.json"
     },
     {
       "name": "Claude Code Harness",

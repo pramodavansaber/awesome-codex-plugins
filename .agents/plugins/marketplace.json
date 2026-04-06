@@ -53,6 +53,18 @@
       "category": "Development & Workflow"
     },
     {
+      "name": "cc",
+      "source": {
+        "source": "local",
+        "path": "./plugins/sendbird/cc-plugin-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow"
+    },
+    {
       "name": "claude-code-harness",
       "source": {
         "source": "local",
@@ -317,7 +329,7 @@
       "category": "Tools & Integrations"
     },
     {
-      "name": "oc-chatgpt-multi-auth",
+      "name": "oc-codex-multi-auth",
       "source": {
         "source": "local",
         "path": "./plugins/ndycode/oc-chatgpt-multi-auth"

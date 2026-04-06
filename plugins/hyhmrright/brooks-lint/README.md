@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.6.2-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-0.7.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg" alt="Claude Code Plugin">
   <img src="https://img.shields.io/badge/Codex_CLI-Skill-orange.svg" alt="Codex CLI Skill">
@@ -29,22 +29,39 @@
 > *"The bearing of a child takes nine months, no matter how many women are assigned."*
 > — Frederick Brooks, *The Mythical Man-Month* (1975)
 
-**50 years later, Brooks was still right — and so were McConnell, Fowler, Martin, Hunt & Thomas, and Evans.**
+**50 years later, Brooks was still right — and so were McConnell, Fowler, Martin, Hunt & Thomas, Evans, Ousterhout, Winters, Meszaros, Osherove, Feathers, and the Google Testing team.**
 
-Most code quality tools count lines and cyclomatic complexity. **brooks-lint** goes deeper — it diagnoses your code against six decay risk dimensions synthesized from six classic engineering books, producing structured findings with book citations, severity labels, and concrete remedies every time.
+Most code quality tools count lines and cyclomatic complexity. **brooks-lint** goes deeper — it diagnoses your code against six decay risk dimensions synthesized from ten classic engineering books, producing structured findings with book citations, severity labels, and concrete remedies every time.
+
+## The Ten Books
+
+| Book | Author | Contributes to |
+|------|--------|----------------|
+| *The Mythical Man-Month* | Frederick Brooks | R2, R4, R5 |
+| *Code Complete* | Steve McConnell | R1, R4 |
+| *Refactoring* | Martin Fowler | R1, R2, R3, R4, R6 |
+| *Clean Architecture* | Robert C. Martin | R2, R5 |
+| *The Pragmatic Programmer* | Hunt & Thomas | R2, R3, R4, R5, T2, T3 |
+| *Domain-Driven Design* | Eric Evans | R1, R3, R6 |
+| *A Philosophy of Software Design* | John Ousterhout | R1, R4 |
+| *Software Engineering at Google* | Winters, Manshreck & Wright | R2, R5 |
+| *Working Effectively with Legacy Code* | Michael Feathers | T4, T5, T6 |
+| *xUnit Test Patterns* | Gerard Meszaros | T1, T2, T3, T4 |
 
 ## The Six Decay Risks
 
-brooks-lint evaluates your code across **six decay risk dimensions** synthesized from six classic engineering books:
+brooks-lint evaluates your code across **six decay risk dimensions** synthesized from ten classic engineering books:
 
 | Decay Risk | Diagnostic Question | Sources |
 |------------|---------------------|---------|
-| 🧠 Cognitive Overload | How much mental effort to understand this? | Code Complete, Refactoring, DDD |
-| 🔗 Change Propagation | How many unrelated things break on one change? | Refactoring, Clean Architecture, Pragmatic |
+| 🧠 Cognitive Overload | How much mental effort to understand this? | Code Complete, Refactoring, DDD, Philosophy of SD |
+| 🔗 Change Propagation | How many unrelated things break on one change? | Refactoring, Clean Architecture, Pragmatic, SE@Google |
 | 📋 Knowledge Duplication | Is the same decision expressed in multiple places? | Pragmatic, Refactoring, DDD |
-| 🌀 Accidental Complexity | Is the code more complex than the problem? | Refactoring, Code Complete, Brooks |
-| 🏗️ Dependency Disorder | Do dependencies flow in a consistent direction? | Clean Architecture, Brooks, Pragmatic |
+| 🌀 Accidental Complexity | Is the code more complex than the problem? | Refactoring, Code Complete, Brooks, Philosophy of SD |
+| 🏗️ Dependency Disorder | Do dependencies flow in a consistent direction? | Clean Architecture, Brooks, Pragmatic, SE@Google |
 | 🗺️ Domain Model Distortion | Does the code faithfully represent the domain? | DDD, Refactoring |
+
+> Philosophy of SD = *A Philosophy of Software Design* (Ousterhout) · SE@Google = *Software Engineering at Google* (Winters et al.)
 
 ## What It Looks Like
 
@@ -210,12 +227,12 @@ cp -r /tmp/brooks-lint/skills/brooks-lint/* ~/.codex/skills/brooks-lint/
 ## Slash Commands
 
 ### Claude Code
-| Command | Action |
-|---------|--------|
-| `/brooks-lint:brooks-review` | PR-level code review |
-| `/brooks-lint:brooks-audit` | Full architecture audit |
-| `/brooks-lint:brooks-debt` | Tech debt assessment |
-| `/brooks-lint:brooks-test` | Test suite health review |
+| Short command | Full command | Action |
+|---------------|-------------|--------|
+| `/brooks-review` | `/brooks-lint:brooks-review` | PR-level code review |
+| `/brooks-audit` | `/brooks-lint:brooks-audit` | Full architecture audit |
+| `/brooks-debt` | `/brooks-lint:brooks-debt` | Tech debt assessment |
+| `/brooks-test` | `/brooks-lint:brooks-test` | Test suite health review |
 
 ### Gemini CLI
 | Command | Action |
@@ -273,6 +290,36 @@ $brooks-lint                        # Codex CLI (then say "review test quality")
 
 Audits your test suite against six test-space decay risks — Test Obscurity, Test Brittleness, Test Duplication, Mock Abuse, Coverage Illusion, and Architecture Mismatch — sourced from xUnit Test Patterns, The Art of Unit Testing, How Google Tests Software, and Working Effectively with Legacy Code. PR reviews also include a lightweight Step 7 Quick Test Check automatically.
 
+## Configuration
+
+Place a `.brooks-lint.yaml` in your project root to customize review behavior:
+
+```yaml
+version: 1
+
+disable:
+  - T3   # skip coverage metrics check — we don't enforce coverage
+
+severity:
+  R1: suggestion   # downgrade Cognitive Overload findings for this domain
+
+ignore:
+  - "**/*.generated.*"
+  - "**/vendor/**"
+```
+
+Copy [`.brooks-lint.example.yaml`](.brooks-lint.example.yaml) as a starting point.
+All settings are optional — omit the file entirely for default behavior.
+
+| Setting | Description |
+|---------|-------------|
+| `disable` | Risk codes to skip (`R1`–`R6`, `T1`–`T6`) |
+| `severity` | Override severity tier (`critical` / `warning` / `suggestion`) |
+| `ignore` | Glob patterns for files to exclude |
+| `focus` | Evaluate only these risk codes (cannot combine with `disable`) |
+
+---
+
 ## Why These Books, Why Now?
 
 In the age of AI-assisted coding, we're writing more code faster than ever. But the insights from six decades of software engineering haven't changed:
@@ -316,7 +363,8 @@ brooks-lint/
 - [x] **v0.4**: Six-book framework, decay risk dimensions, diagnosis chain, benchmark suite
 - [x] **v0.5**: Test Quality Review (Mode 4) — four testing books, six test decay risks
 - [x] **v0.6**: Mermaid dependency graph in Architecture Audit
-- [ ] **v0.7**: GitHub Action for CI/CD integration
+- [x] **v0.7**: `.brooks-lint.yaml` project config, Mode 2 proactive context, 10-book expansion, short-form commands
+- [ ] **v0.8**: GitHub Action for CI/CD integration
 - [ ] **v1.0**: VS Code extension
 
 Want to help? The best contributions right now are new eval test cases and improved decay risk symptom patterns. See [CONTRIBUTING.md](CONTRIBUTING.md).
