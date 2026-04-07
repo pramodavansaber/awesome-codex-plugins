@@ -1,0 +1,24 @@
+name: Sync to awesome-ai-plugins
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - plugins.json
+      - .agents/plugins/marketplace.json
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    name: Trigger sync to awesome-ai-plugins
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          repository: hashgraph-online/awesome-ai-plugins
+          event-type: sync-to-ai-plugins
+          token: ${{ secrets.GITHUB_TOKEN }}
