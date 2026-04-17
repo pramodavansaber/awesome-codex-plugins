@@ -25,7 +25,8 @@ README = Path(__file__).parent.parent / "README.md"
 OUTPUT = Path(__file__).parent.parent / "plugins.json"
 MARKETPLACE_OUTPUT = Path(__file__).parent.parent / ".agents" / "plugins" / "marketplace.json"
 PLUGINS_ROOT = Path(__file__).parent.parent / "plugins"
-REQUEST_TIMEOUT_SECONDS = 45
+REQUEST_TIMEOUT_SECONDS = 60
+MAX_RETRIES = 3
 USER_AGENT = "awesome-codex-plugins-generator"
 OPTIONAL_PLUGIN_FILES = (
     "README.md",
@@ -103,12 +104,21 @@ def parse_plugins(readme_path: Path) -> list[dict[str, str]]:
 
 
 def fetch_repo_archive(owner: str, repo: str) -> zipfile.ZipFile:
-    request = urllib.request.Request(
-        f"https://github.com/{owner}/{repo}/archive/HEAD.zip",
-        headers={"User-Agent": USER_AGENT},
-    )
-    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-        return zipfile.ZipFile(io.BytesIO(response.read()))
+    last_error = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            request = urllib.request.Request(
+                f"https://github.com/{owner}/{repo}/archive/HEAD.zip",
+                headers={"User-Agent": USER_AGENT},
+            )
+            with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+                return zipfile.ZipFile(io.BytesIO(response.read()))
+        except Exception as e:
+            last_error = e
+            if attempt < MAX_RETRIES - 1:
+                import time
+                time.sleep(2 ** attempt)  # exponential backoff
+    raise last_error
 
 
 def resolve_plugin_root(names: set[str]) -> PurePosixPath:
@@ -175,9 +185,16 @@ def collect_selected_paths(
 
 
 def mirror_plugin_bundle(plugin: dict[str, str]) -> tuple[dict[str, object], str]:
-    archive = fetch_repo_archive(plugin["owner"], plugin["repo"])
+    owner_repo = f"{plugin['owner']}/{plugin['repo']}"
+    try:
+        archive = fetch_repo_archive(plugin["owner"], plugin["repo"])
+    except Exception as e:
+        raise ValueError(f"Failed to fetch {owner_repo}: {e}") from e
     names = {name for name in archive.namelist() if not name.endswith("/")}
-    plugin_root = resolve_plugin_root(names)
+    try:
+        plugin_root = resolve_plugin_root(names)
+    except ValueError:
+        raise ValueError(f"Archive for {owner_repo} does not contain .codex-plugin/plugin.json") from None
     manifest = load_manifest(archive, plugin_root)
     selected_paths = collect_selected_paths(manifest, names, plugin_root)
 
